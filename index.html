@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Laloo Birthday Loader</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -17,30 +16,22 @@
       --red2:#b11226;
       --shadow: rgba(0,0,0,0.18);
 
-      /* strong pink for white bg */
       --pink1:#ff3f87;
       --pink2:#d6165a;
       --pink3:#9c0f3b;
-
       --glow: rgba(255, 90, 150, 0.55);
     }
 
     html,body{height:100%; margin:0;}
-    body{
-      overflow:hidden;
-      background: transparent;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
+    body{overflow:hidden; background:transparent; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
 
     .overlay{
       position:fixed; inset:0;
       display:flex; align-items:center; justify-content:center;
-      background:
-        radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,0.28), transparent 58%),
-        var(--bg);
+      background: radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,0.28), transparent 58%), var(--bg);
       backdrop-filter: blur(3px);
       -webkit-backdrop-filter: blur(3px);
-      z-index: 999999;
+      z-index:999999;
       animation: overlayIn 320ms ease-out both;
     }
     .overlay.exit{ animation: overlayOut 650ms ease-in forwards; }
@@ -57,16 +48,15 @@
     }
 
     .hint{
-      position:absolute;
-      top:14px; left:50%;
+      position:absolute; top:14px; left:50%;
       transform: translateX(-50%);
-      font-size: 12px;
-      color: rgba(17,17,17,0.55);
+      font-size:12px;
+      color:rgba(17,17,17,0.55);
       opacity:0;
       animation: hintIn 600ms ease-out 900ms forwards;
       user-select:none;
-      white-space: nowrap;
-      z-index: 60;
+      white-space:nowrap;
+      z-index:60;
     }
     @keyframes hintIn{ to{opacity:1} }
 
@@ -90,8 +80,7 @@
       left:50%;
       bottom:148px;
       transform: translateX(-50%) translateY(24px) scale(0.92);
-      width: 240px;
-      height: 240px;
+      width:240px; height:240px;
       opacity:0;
       animation: boxIntro 700ms cubic-bezier(.2,.9,.25,1.2) 160ms forwards,
                  boxShake 1600ms ease-in-out 1400ms forwards;
@@ -169,7 +158,7 @@
       left:50%; top:64px;
       width:10px; height:10px;
       transform: translateX(-50%);
-      border-radius: 999px;
+      border-radius:999px;
       background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0.0));
       opacity:0;
       filter: drop-shadow(0 0 22px var(--glow)) drop-shadow(0 0 38px var(--glow));
@@ -186,17 +175,16 @@
     .prod{
       position:absolute;
       left:50%;
-      top: 250px;
+      top:250px;
       transform: translateX(-50%) translateY(40px) scale(0.72);
       opacity:0;
-      will-change: transform, opacity;
       filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18));
       pointer-events:none;
       z-index: 9;
     }
-    .prod.small{ width: 96px; }
-    .prod.med{ width: 110px; }
-    .prod.big{ width: 124px; }
+    .prod.small{ width:96px; }
+    .prod.med{ width:110px; }
+    .prod.big{ width:124px; }
 
     .a1{ animation: flyA1 2300ms cubic-bezier(.12,.95,.2,1.02) 2450ms forwards; }
     .a2{ animation: flyA2 2400ms cubic-bezier(.12,.95,.2,1.02) 2520ms forwards; }
@@ -256,60 +244,57 @@
       100%{opacity:0; transform:translateX(-50%) translate(55px,-390px) scale(1.16) rotate(-55deg)}
     }
 
-    /* ---------- HANDWRITTEN HEADLINE ---------- */
+    /* ---------- HEADLINE (TEXT + UNDERLINE) ---------- */
     .headline{
       position:absolute;
       left:50%;
-      bottom: 46px;
+      bottom: 54px;
       transform: translateX(-50%);
-      width: min(92vw, 760px); /* ✅ smaller so it doesn't go huge */
+      width: min(92vw, 760px);
       text-align:center;
       z-index: 50;
       pointer-events:none;
     }
 
     .sig{
-      width: 100%;
-      height: auto;
+      width:100%;
+      height:auto;
       overflow: visible;
-      filter:
-        drop-shadow(0 14px 28px rgba(0,0,0,0.10))
-        drop-shadow(0 0 18px rgba(255, 90, 150, 0.18));
+      filter: drop-shadow(0 14px 28px rgba(0,0,0,0.10))
+              drop-shadow(0 0 18px rgba(255, 90, 150, 0.16));
     }
 
-    #sigPath{
+    .sigText{
+      font-family:"Allura", cursive;
+      font-weight:400;
+      font-size: clamp(54px, 7.2vw, 96px);
+      fill: url(#pinkGrad);
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.10))
+              drop-shadow(0 0 10px rgba(255,90,150,0.16));
+    }
+
+    /* underline is below text */
+    #underlinePath{
       fill:none;
       stroke: rgba(214, 22, 90, 0.98);
-      stroke-width: 9;
+      stroke-width: 8;
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-dasharray: 2600;
-      stroke-dashoffset: 2600;
+      stroke-dasharray: 2400;
+      stroke-dashoffset: 2400;
+      filter: drop-shadow(0 0 18px rgba(255, 90, 150, 0.25));
     }
 
     .penTip{
-      filter:
-        drop-shadow(0 0 14px rgba(255, 90, 150, 0.75))
-        drop-shadow(0 10px 20px rgba(0,0,0,0.10));
-      opacity: 0;
-    }
-
-    /* ✅ smaller + strong pink + soft shadow */
-    .sigText{
-      font-family: "Allura", cursive;
-      font-weight: 400;
-      font-size: clamp(54px, 7.2vw, 96px);
-      fill: url(#pinkGrad);
-      /* soft shadow so it pops on white */
-      filter:
-        drop-shadow(0 10px 18px rgba(0,0,0,0.10))
-        drop-shadow(0 0 10px rgba(255, 90, 150, 0.18));
+      filter: drop-shadow(0 0 14px rgba(255, 90, 150, 0.75))
+              drop-shadow(0 10px 20px rgba(0,0,0,0.10));
+      opacity:0;
     }
 
     .subline{
-      margin-top: -8px;
-      font-family: "Playfair Display", serif;
-      font-weight: 700;
+      margin-top: -6px;
+      font-family:"Playfair Display", serif;
+      font-weight:700;
       font-size: clamp(12px, 2.2vw, 18px);
       letter-spacing: 0.6px;
       color: rgba(214, 22, 90, 0.84);
@@ -318,9 +303,9 @@
     }
 
     @media (max-width: 480px){
-      #sigPath{ stroke-width: 7; }
-      .headline{ width: min(92vw, 520px); }
-      .subline{ margin-top: -4px; }
+      .headline{ width: min(92vw, 520px); bottom: 56px; }
+      #underlinePath{ stroke-width: 6; }
+      .subline{ margin-top: -2px; }
     }
   </style>
 </head>
@@ -349,9 +334,9 @@
       <img class="prod med  a7" src="https://assets.laloo.gr/img/cms/BASE.png" alt="">
       <img class="prod med  a8" src="https://assets.laloo.gr/img/cms/Antifungal_15ml_Transparent.png" alt="">
 
-      <!-- HANDWRITTEN HEADLINE -->
+      <!-- HEADLINE -->
       <div class="headline">
-        <svg class="sig" viewBox="0 0 1200 240" role="img" aria-label="Laloo Birthday Sales">
+        <svg class="sig" viewBox="0 0 1200 260" role="img" aria-label="Laloo Birthday Sales">
           <defs>
             <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="var(--pink1)"/>
@@ -359,29 +344,27 @@
               <stop offset="100%" stop-color="var(--pink3)"/>
             </linearGradient>
 
-            <!-- Mask reveals text as the pen writes -->
+            <!-- Reveal text from left to right as we write underline -->
             <mask id="revealMask">
-              <rect id="revealRect" x="0" y="0" width="0" height="260" fill="white"></rect>
+              <rect id="revealRect" x="0" y="0" width="0" height="300" fill="white"></rect>
             </mask>
           </defs>
 
-          <!-- Stroke path -->
-          <path id="sigPath"
-            d="M40,160
-               C110,60 240,70 310,160
-               C360,220 440,220 490,160
-               C560,70 700,70 770,160
-               C830,230 930,220 980,150
-               C1040,75 1120,85 1160,165" />
-
-          <!-- Pen tip -->
-          <circle id="penGlow" class="penTip" r="16" cx="40" cy="160" fill="rgba(255,90,150,0.35)"></circle>
-          <circle id="penTip" class="penTip" r="9" cx="40" cy="160" fill="white"></circle>
-
-          <!-- Text (revealed by mask progressively) -->
-          <text class="sigText" x="50%" y="63%" text-anchor="middle" mask="url(#revealMask)">
+          <!-- Calligraphy text -->
+          <text class="sigText" x="50%" y="58%" text-anchor="middle" mask="url(#revealMask)">
             LALOO BIRTHDAY SALES
           </text>
+
+          <!-- Underline path BELOW text (y ~ 205) -->
+          <path id="underlinePath"
+            d="M70,205
+               C220,230 360,230 520,205
+               C700,175 860,175 1040,205
+               C1110,218 1140,220 1160,205" />
+
+          <!-- Pen tip follows underline -->
+          <circle id="penGlow" class="penTip" r="16" cx="70" cy="205" fill="rgba(255,90,150,0.35)"></circle>
+          <circle id="penTip" class="penTip" r="9" cx="70" cy="205" fill="white"></circle>
         </svg>
 
         <div class="subline" id="subline">14 years of color</div>
@@ -405,35 +388,27 @@
       doneOnce = true;
 
       overlay.classList.add("exit");
-
-      // notify parent (safe)
       try { window.parent.postMessage({ type:"BIRTHDAY_LOADER_DONE", reason }, "*"); } catch(e){}
 
-      // redirect top (works even in iframe-only)
-      setTimeout(() => {
-        try { window.top.location.href = REDIRECT_URL; } catch(e) {}
-      }, 180);
+      setTimeout(() => { try { window.top.location.href = REDIRECT_URL; } catch(e){} }, 180);
     }
 
-    // click anywhere
     window.addEventListener("click", () => done("click"), { capture:true, once:true });
-
-    // failsafe
     setTimeout(() => done("timeout"), duration);
 
-    // -------- Handwriting (stroke + text reveal together) --------
-    const WRITE_DELAY = 3600;  // sync with box opening
+    // -------- Underline writing + text reveal together --------
+    const WRITE_DELAY = 3600;
     const WRITE_MS = 1750;
 
-    const path = document.getElementById("sigPath");
+    const underline = document.getElementById("underlinePath");
     const penTip = document.getElementById("penTip");
     const penGlow = document.getElementById("penGlow");
     const revealRect = document.getElementById("revealRect");
     const subline = document.getElementById("subline");
 
-    const len = path.getTotalLength();
-    path.style.strokeDasharray = String(len);
-    path.style.strokeDashoffset = String(len);
+    const len = underline.getTotalLength();
+    underline.style.strokeDasharray = String(len);
+    underline.style.strokeDashoffset = String(len);
 
     function showSubline(){
       subline.style.transition = "opacity 520ms ease-out";
@@ -447,19 +422,19 @@
 
       function frame(now){
         const t = Math.min(1, (now - start) / WRITE_MS);
-        const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+        const eased = 1 - Math.pow(1 - t, 3);
 
-        // stroke draw
-        path.style.strokeDashoffset = String(len * (1 - eased));
+        // draw underline
+        underline.style.strokeDashoffset = String(len * (1 - eased));
 
-        // pen position
-        const p = path.getPointAtLength(len * eased);
+        // pen follows underline
+        const p = underline.getPointAtLength(len * eased);
         penTip.setAttribute("cx", p.x);
         penTip.setAttribute("cy", p.y);
         penGlow.setAttribute("cx", p.x);
         penGlow.setAttribute("cy", p.y);
 
-        // ✅ reveal text at the same time as writing (mask width follows progress)
+        // reveal text in sync
         revealRect.setAttribute("width", String(1200 * eased));
 
         if (t < 1) requestAnimationFrame(frame);
@@ -474,7 +449,7 @@
 
     setTimeout(animateWrite, WRITE_DELAY);
 
-    // -------- Fireworks particles (classy palette) --------
+    // -------- Fireworks particles --------
     const canvas = document.getElementById("fx");
     const ctx = canvas.getContext("2d");
 
