@@ -244,13 +244,13 @@
       100%{opacity:0; transform:translateX(-50%) translate(55px,-390px) scale(1.16) rotate(-55deg)}
     }
 
-    /* ---------- HEADLINE (TEXT + UNDERLINE) ---------- */
+    /* ---------- HEADLINE (moved LOWER + responsive) ---------- */
     .headline{
       position:absolute;
       left:50%;
-      bottom: 54px;
+      bottom: 34px;                /* ✅ lowered (was 54px) */
       transform: translateX(-50%);
-      width: min(92vw, 760px);
+      width: min(92vw, 680px);     /* ✅ narrower so it doesn't spread */
       text-align:center;
       z-index: 50;
       pointer-events:none;
@@ -267,13 +267,12 @@
     .sigText{
       font-family:"Allura", cursive;
       font-weight:400;
-      font-size: clamp(54px, 7.2vw, 96px);
+      font-size: clamp(50px, 6.8vw, 88px); /* ✅ slightly smaller */
       fill: url(#pinkGrad);
       filter: drop-shadow(0 10px 18px rgba(0,0,0,0.10))
               drop-shadow(0 0 10px rgba(255,90,150,0.16));
     }
 
-    /* underline is below text */
     #underlinePath{
       fill:none;
       stroke: rgba(214, 22, 90, 0.98);
@@ -292,18 +291,24 @@
     }
 
     .subline{
-      margin-top: -6px;
+      margin-top: -4px;
       font-family:"Playfair Display", serif;
       font-weight:700;
-      font-size: clamp(12px, 2.2vw, 18px);
+      font-size: clamp(12px, 2.1vw, 17px);
       letter-spacing: 0.6px;
       color: rgba(214, 22, 90, 0.84);
       text-shadow: 0 12px 22px rgba(0,0,0,0.10);
       opacity: 0;
     }
 
-    @media (max-width: 480px){
-      .headline{ width: min(92vw, 520px); bottom: 56px; }
+    @media (max-width: 520px){
+      .headline{
+        width: min(94vw, 520px);
+        bottom: 30px;
+      }
+      .sigText{
+        font-size: clamp(42px, 8.2vw, 72px); /* ✅ mobile smaller */
+      }
       #underlinePath{ stroke-width: 6; }
       .subline{ margin-top: -2px; }
     }
@@ -344,27 +349,24 @@
               <stop offset="100%" stop-color="var(--pink3)"/>
             </linearGradient>
 
-            <!-- Reveal text from left to right as we write underline -->
             <mask id="revealMask">
               <rect id="revealRect" x="0" y="0" width="0" height="300" fill="white"></rect>
             </mask>
           </defs>
 
-          <!-- Calligraphy text -->
           <text class="sigText" x="50%" y="58%" text-anchor="middle" mask="url(#revealMask)">
             LALOO BIRTHDAY SALES
           </text>
 
-          <!-- Underline path BELOW text (y ~ 205) -->
+          <!-- underline a bit lower and flatter, so it doesn't climb -->
           <path id="underlinePath"
-            d="M70,205
-               C220,230 360,230 520,205
-               C700,175 860,175 1040,205
-               C1110,218 1140,220 1160,205" />
+            d="M90,210
+               C260,226 380,226 540,210
+               C720,192 880,192 1030,210
+               C1100,218 1140,218 1160,210" />
 
-          <!-- Pen tip follows underline -->
-          <circle id="penGlow" class="penTip" r="16" cx="70" cy="205" fill="rgba(255,90,150,0.35)"></circle>
-          <circle id="penTip" class="penTip" r="9" cx="70" cy="205" fill="white"></circle>
+          <circle id="penGlow" class="penTip" r="16" cx="90" cy="210" fill="rgba(255,90,150,0.35)"></circle>
+          <circle id="penTip" class="penTip" r="9" cx="90" cy="210" fill="white"></circle>
         </svg>
 
         <div class="subline" id="subline">14 years of color</div>
@@ -373,10 +375,8 @@
   </div>
 
   <script>
-    // Redirect target
     const REDIRECT_URL = "https://laloo.gr/el/content/121-laloo-birthday-festival-14-years-of-color";
 
-    // Duration default 10s (override ?duration=10000)
     const qs = new URLSearchParams(location.search);
     const duration = Math.max(2000, Math.min(20000, Number(qs.get("duration")) || 10000));
 
@@ -386,17 +386,15 @@
     function done(reason){
       if (doneOnce) return;
       doneOnce = true;
-
       overlay.classList.add("exit");
       try { window.parent.postMessage({ type:"BIRTHDAY_LOADER_DONE", reason }, "*"); } catch(e){}
-
       setTimeout(() => { try { window.top.location.href = REDIRECT_URL; } catch(e){} }, 180);
     }
 
     window.addEventListener("click", () => done("click"), { capture:true, once:true });
     setTimeout(() => done("timeout"), duration);
 
-    // -------- Underline writing + text reveal together --------
+    // underline writing + text reveal together
     const WRITE_DELAY = 3600;
     const WRITE_MS = 1750;
 
@@ -424,17 +422,14 @@
         const t = Math.min(1, (now - start) / WRITE_MS);
         const eased = 1 - Math.pow(1 - t, 3);
 
-        // draw underline
         underline.style.strokeDashoffset = String(len * (1 - eased));
 
-        // pen follows underline
         const p = underline.getPointAtLength(len * eased);
         penTip.setAttribute("cx", p.x);
         penTip.setAttribute("cy", p.y);
         penGlow.setAttribute("cx", p.x);
         penGlow.setAttribute("cy", p.y);
 
-        // reveal text in sync
         revealRect.setAttribute("width", String(1200 * eased));
 
         if (t < 1) requestAnimationFrame(frame);
@@ -449,7 +444,7 @@
 
     setTimeout(animateWrite, WRITE_DELAY);
 
-    // -------- Fireworks particles --------
+    // fireworks particles
     const canvas = document.getElementById("fx");
     const ctx = canvas.getContext("2d");
 
