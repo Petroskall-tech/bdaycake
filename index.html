@@ -8,523 +8,216 @@
   <!-- Geologica -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@500;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@500;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg: rgba(255,255,255,0.92);
+      --bg: rgba(255,255,255,0.94);
       --red1:#c4142d;
       --red2:#b11226;
-      --shadow: rgba(0,0,0,0.18);
 
-      /* stronger pink for white */
       --pinkA:#ff2f7d;
       --pinkB:#d6165a;
       --pinkC:#9c0f3b;
-
-      --glow: rgba(255, 90, 150, 0.55);
-      --inkShadow: rgba(0,0,0,0.14);
     }
 
-    html,body{height:100%; margin:0;}
-    body{overflow:hidden; background:transparent; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    html,body{height:100%;margin:0;}
+    body{overflow:hidden;background:transparent;}
 
     .overlay{
       position:fixed; inset:0;
       display:flex; align-items:center; justify-content:center;
-      background: radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,0.28), transparent 58%), var(--bg);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      z-index:999999;
-      animation: overlayIn 320ms ease-out both;
+      background:
+        radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,.30), transparent 58%),
+        var(--bg);
+      z-index:9999;
     }
-    .overlay.exit{ animation: overlayOut 650ms ease-in forwards; }
-    @keyframes overlayIn { from{opacity:0} to{opacity:1} }
-    @keyframes overlayOut { to{opacity:0; visibility:hidden} }
 
-    #fx{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+    #fx{position:absolute; inset:0; pointer-events:none;}
 
     .stage{
       position:relative;
-      width:min(760px, 94vw);
-      height:min(620px, 86vh);
-      display:flex; align-items:center; justify-content:center;
+      width:min(760px,94vw);
+      height:min(640px,88vh);
     }
 
     .hint{
       position:absolute; top:14px; left:50%;
-      transform: translateX(-50%);
+      transform:translateX(-50%);
       font-size:12px;
-      color:rgba(17,17,17,0.55);
-      opacity:0;
-      animation: hintIn 600ms ease-out 900ms forwards;
-      user-select:none;
-      white-space:nowrap;
-      z-index:60;
+      opacity:.55;
+      font-family:system-ui;
     }
-    @keyframes hintIn{ to{opacity:1} }
-
-    .floor{
-      position:absolute;
-      width:min(480px, 84vw);
-      height:34px;
-      bottom:120px;
-      background: radial-gradient(closest-side, rgba(0,0,0,0.22), transparent 70%);
-      filter: blur(2px);
-      opacity:0;
-      transform: translateY(10px);
-      animation: floorIn 600ms ease-out 260ms forwards;
-      z-index: 1;
-    }
-    @keyframes floorIn { to{opacity:1; transform: translateY(0)} }
 
     /* BOX */
     .boxWrap{
       position:absolute;
       left:50%;
-      bottom:148px;
-      transform: translateX(-50%) translateY(24px) scale(0.92);
+      bottom:170px;
+      transform:translateX(-50%);
       width:240px; height:240px;
-      opacity:0;
-      animation: boxIntro 700ms cubic-bezier(.2,.9,.25,1.2) 160ms forwards,
-                 boxShake 1600ms ease-in-out 1400ms forwards;
-      z-index: 10;
-    }
-    @keyframes boxIntro {
-      from { opacity:0; transform: translateX(-50%) translateY(34px) scale(0.84); }
-      to   { opacity:1; transform: translateX(-50%) translateY(24px) scale(1); }
-    }
-    @keyframes boxShake {
-      0%{transform:translateX(-50%) translateY(24px) rotate(0deg)}
-      15%{transform:translateX(-50%) translateY(24px) rotate(-2deg)}
-      30%{transform:translateX(-50%) translateY(24px) rotate(2deg)}
-      45%{transform:translateX(-50%) translateY(24px) rotate(-2.6deg)}
-      60%{transform:translateX(-50%) translateY(24px) rotate(2.6deg)}
-      75%{transform:translateX(-50%) translateY(24px) rotate(-1.2deg)}
-      90%{transform:translateX(-50%) translateY(24px) rotate(1.2deg)}
-      100%{transform:translateX(-50%) translateY(24px) rotate(0deg)}
     }
 
     .boxBody{
       position:absolute;
-      left:50%; bottom:0;
+      bottom:0; left:50%;
+      transform:translateX(-50%);
       width:240px; height:170px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, var(--red1), var(--red2));
-      border-radius: 20px;
-      box-shadow: 0 18px 44px var(--shadow);
-      overflow:hidden;
-    }
-    .boxBody::before{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(90deg, rgba(255,255,255,0.14), transparent 30%, rgba(255,255,255,0.07));
-      transform: translateX(-24%);
-      opacity:0.75;
-    }
-    .boxBody::after{
-      content:"";
-      position:absolute;
-      left:50%; bottom:-16px;
-      width:320px; height:280px;
-      transform: translateX(-50%) translateY(80px) scale(0.9);
-      background: radial-gradient(circle at 50% 70%, rgba(255,255,255,0.92), rgba(255,170,190,0.38), transparent 62%);
-      opacity:0;
-      filter: blur(6px);
-      animation: innerGlow 1800ms ease-out 2000ms forwards;
-    }
-    @keyframes innerGlow{
-      0%{ opacity:0; transform: translateX(-50%) translateY(88px) scale(0.9); }
-      35%{ opacity:1; transform: translateX(-50%) translateY(18px) scale(1); }
-      100%{ opacity:0.35; transform: translateX(-50%) translateY(-14px) scale(1.06); }
+      border-radius:20px;
+      background:linear-gradient(180deg,var(--red1),var(--red2));
     }
 
     .boxLid{
       position:absolute;
-      left:50%; top:22px;
+      left:50%; top:20px;
+      transform-origin:50% 90%;
+      transform:translateX(-50%) rotate(-28deg);
       width:270px; height:72px;
-      transform: translateX(-50%) translateY(0) rotate(0deg);
-      transform-origin: 50% 90%;
-      background: linear-gradient(180deg, #d92b45, var(--red1));
-      border-radius: 20px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.14);
-      animation: lidPop 1900ms cubic-bezier(.16,.95,.18,1.05) 1750ms forwards;
-    }
-    @keyframes lidPop {
-      0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
-      25%  { transform: translateX(-50%) translateY(-10px) rotate(-6deg); }
-      55%  { transform: translateX(-50%) translateY(-40px) rotate(-18deg); }
-      100% { transform: translateX(-50%) translateY(-78px) rotate(-32deg); }
+      border-radius:20px;
+      background:linear-gradient(180deg,#d92b45,var(--red1));
     }
 
-    .spark{
-      position:absolute;
-      left:50%; top:64px;
-      width:10px; height:10px;
-      transform: translateX(-50%);
-      border-radius:999px;
-      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0.0));
-      opacity:0;
-      filter: drop-shadow(0 0 22px var(--glow)) drop-shadow(0 0 38px var(--glow));
-      animation: sparkBurst 700ms ease-out 2350ms forwards;
-      z-index: 12;
-    }
-    @keyframes sparkBurst{
-      0% { opacity:0; transform: translateX(-50%) scale(0.6); }
-      40%{ opacity:1; transform: translateX(-50%) scale(3.6); }
-      100%{ opacity:0; transform: translateX(-50%) scale(6.2); }
-    }
-
-    /* PRODUCTS */
-    .prod{
-      position:absolute;
-      left:50%;
-      top:250px;
-      transform: translateX(-50%) translateY(40px) scale(0.72);
-      opacity:0;
-      filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18));
-      pointer-events:none;
-      z-index: 9;
-    }
-    .prod.small{ width:96px; }
-    .prod.med{ width:110px; }
-    .prod.big{ width:124px; }
-
-    .a1{ animation: flyA1 2300ms cubic-bezier(.12,.95,.2,1.02) 2450ms forwards; }
-    .a2{ animation: flyA2 2400ms cubic-bezier(.12,.95,.2,1.02) 2520ms forwards; }
-    .a3{ animation: flyA3 2500ms cubic-bezier(.12,.95,.2,1.02) 2580ms forwards; }
-    .a4{ animation: flyA4 2600ms cubic-bezier(.12,.95,.2,1.02) 2640ms forwards; }
-    .a5{ animation: flyA5 2550ms cubic-bezier(.12,.95,.2,1.02) 2480ms forwards; }
-    .a6{ animation: flyA6 2650ms cubic-bezier(.12,.95,.2,1.02) 2560ms forwards; }
-    .a7{ animation: flyA7 2700ms cubic-bezier(.12,.95,.2,1.02) 2620ms forwards; }
-    .a8{ animation: flyA8 2800ms cubic-bezier(.12,.95,.2,1.02) 2680ms forwards; }
-
-    @keyframes flyA1{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      18%{opacity:1; transform:translateX(-50%) translate(-140px,10px) scale(1.02) rotate(-12deg)}
-      72%{opacity:1; transform:translateX(-50%) translate(-260px,-190px) scale(1.10) rotate(-26deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(-300px,-280px) scale(1.12) rotate(-34deg)}
-    }
-    @keyframes flyA2{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      18%{opacity:1; transform:translateX(-50%) translate(140px,12px) scale(1.02) rotate(12deg)}
-      72%{opacity:1; transform:translateX(-50%) translate(260px,-188px) scale(1.10) rotate(26deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(300px,-280px) scale(1.12) rotate(34deg)}
-    }
-    @keyframes flyA3{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      22%{opacity:1; transform:translateX(-50%) translate(-60px,-10px) scale(1.03) rotate(10deg)}
-      76%{opacity:1; transform:translateX(-50%) translate(-110px,-240px) scale(1.12) rotate(22deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(-120px,-330px) scale(1.14) rotate(28deg)}
-    }
-    @keyframes flyA4{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      22%{opacity:1; transform:translateX(-50%) translate(60px,-8px) scale(1.03) rotate(-10deg)}
-      76%{opacity:1; transform:translateX(-50%) translate(120px,-240px) scale(1.12) rotate(-22deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(130px,-330px) scale(1.14) rotate(-28deg)}
-    }
-    @keyframes flyA5{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      20%{opacity:1; transform:translateX(-50%) translate(-170px,40px) scale(1.02) rotate(-22deg)}
-      72%{opacity:1; transform:translateX(-50%) translate(-320px,-110px) scale(1.12) rotate(-52deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(-370px,-200px) scale(1.14) rotate(-70deg)}
-    }
-    @keyframes flyA6{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      20%{opacity:1; transform:translateX(-50%) translate(170px,42px) scale(1.02) rotate(22deg)}
-      72%{opacity:1; transform:translateX(-50%) translate(320px,-108px) scale(1.12) rotate(52deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(370px,-200px) scale(1.14) rotate(70deg)}
-    }
-    @keyframes flyA7{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      22%{opacity:1; transform:translateX(-50%) translate(-10px,-40px) scale(1.03) rotate(18deg)}
-      76%{opacity:1; transform:translateX(-50%) translate(-35px,-290px) scale(1.14) rotate(40deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(-40px,-390px) scale(1.16) rotate(55deg)}
-    }
-    @keyframes flyA8{
-      0%{opacity:0; transform:translateX(-50%) translate(0px,80px) scale(.66) rotate(0deg)}
-      22%{opacity:1; transform:translateX(-50%) translate(10px,-40px) scale(1.03) rotate(-18deg)}
-      76%{opacity:1; transform:translateX(-50%) translate(45px,-290px) scale(1.14) rotate(-40deg)}
-      100%{opacity:0; transform:translateX(-50%) translate(55px,-390px) scale(1.16) rotate(-55deg)}
-    }
-
-    /* ---------- HEADLINE (Geologica) ---------- */
+    /* HEADLINE */
     .headline{
       position:absolute;
       left:50%;
-      bottom: 18px;                 /* ✅ lower so desktop won't hit box */
-      transform: translateX(-50%);
-      width: min(92vw, 680px);
+      bottom:0;               /* 🔥 πολύ πιο κάτω στο mobile */
+      transform:translateX(-50%);
+      width:min(92vw,640px);
       text-align:center;
-      z-index: 50;
       pointer-events:none;
     }
 
-    .sig{ width:100%; height:auto; overflow:visible; }
+    .sig{width:100%;height:auto;}
 
     .titleText{
-      font-family:"Geologica", system-ui, sans-serif;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      font-size: clamp(26px, 3.6vw, 40px);
-      fill: url(#pinkGrad);
-      filter: drop-shadow(0 10px 18px var(--inkShadow))
-              drop-shadow(0 0 10px rgba(255,90,150,0.18));
-    }
-
-    #underlinePath{
-      fill:none;
-      stroke: rgba(214, 22, 90, 0.95);
-      stroke-width: 7;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-dasharray: 2400;
-      stroke-dashoffset: 2400;
-      filter: drop-shadow(0 0 16px rgba(255, 90, 150, 0.25));
-    }
-
-    .penTip{
-      filter: drop-shadow(0 0 14px rgba(255, 90, 150, 0.75))
-              drop-shadow(0 10px 20px rgba(0,0,0,0.10));
-      opacity:0;
+      font-family:"Geologica",system-ui,sans-serif;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:clamp(28px,4vw,42px);
+      fill:url(#pinkGrad);
+      filter:
+        drop-shadow(0 8px 14px rgba(0,0,0,.14))
+        drop-shadow(0 0 10px rgba(255,80,140,.25));
     }
 
     .subline{
-      margin-top: 6px;
-      font-family:"Playfair Display", serif;
+      margin-top:6px;
+      font-family:"Playfair Display",serif;
       font-weight:700;
-      font-size: clamp(12px, 2.1vw, 16px);
-      letter-spacing: 0.4px;
-      color: rgba(214, 22, 90, 0.82);
-      text-shadow: 0 12px 22px rgba(0,0,0,0.10);
-      opacity: 0;
+      font-size:15px;
+      color:#d6165a;
+      opacity:0;
+      transition:.5s;
     }
 
-    /* ✅ Mobile: make it BIGGER (not tiny), and prevent overflow */
-    @media (max-width: 520px){
+    /* underline */
+    #underlinePath{
+      fill:none;
+      stroke:#d6165a;
+      stroke-width:7;
+      stroke-linecap:round;
+      stroke-dasharray:2000;
+      stroke-dashoffset:2000;
+    }
+
+    .pen{opacity:0}
+
+    /* MOBILE BOOST */
+    @media (max-width:520px){
       .headline{
-        width: min(94vw, 520px);
-        bottom: 18px;
+        bottom:-6px;            /* 🔥 ακόμη πιο κάτω */
+        width:94vw;
       }
       .titleText{
-        font-size: clamp(22px, 6.6vw, 34px);
-        letter-spacing: 0.4px;
+        font-size:clamp(30px,9vw,44px); /* 🔥 ΠΟΛΥ πιο μεγάλο */
       }
-      #underlinePath{ stroke-width: 6; }
-      .subline{ font-size: 13px; }
+      .subline{
+        font-size:14px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div id="overlay" class="overlay">
-    <canvas id="fx"></canvas>
+<div class="overlay" id="overlay">
+  <canvas id="fx"></canvas>
 
-    <div class="stage">
-      <div class="hint">Tap anywhere to continue</div>
-      <div class="floor"></div>
+  <div class="stage">
+    <div class="hint">Tap anywhere to continue</div>
 
-      <div class="boxWrap">
-        <div class="boxLid"></div>
-        <div class="boxBody"></div>
-        <div class="spark"></div>
-      </div>
+    <div class="boxWrap">
+      <div class="boxLid"></div>
+      <div class="boxBody"></div>
+    </div>
 
-      <!-- PRODUCTS -->
-      <img class="prod big  a1" src="https://assets.laloo.gr/img/cms/Graphen_Base_Blush_Shimmer_15ml.png" alt="">
-      <img class="prod med  a2" src="https://assets.laloo.gr/img/cms/Laloo_Non_Wipe_Top_Coat.png" alt="">
-      <img class="prod big  a3" src="https://assets.laloo.gr/img/cms/Star_top_15ml.png" alt="">
-      <img class="prod med  a4" src="https://assets.laloo.gr/img/cms/Primer_Bonder_15ml_Transparent.png" alt="">
-      <img class="prod big  a5" src="https://assets.laloo.gr/img/cms/GEL_POLISH_019.png" alt="">
-      <img class="prod big  a6" src="https://assets.laloo.gr/img/cms/BIAB.png" alt="">
-      <img class="prod med  a7" src="https://assets.laloo.gr/img/cms/BASE.png" alt="">
-      <img class="prod med  a8" src="https://assets.laloo.gr/img/cms/Antifungal_15ml_Transparent.png" alt="">
+    <div class="headline">
+      <svg class="sig" viewBox="0 0 1200 200">
+        <defs>
+          <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--pinkA)"/>
+            <stop offset="55%" stop-color="var(--pinkB)"/>
+            <stop offset="100%" stop-color="var(--pinkC)"/>
+          </linearGradient>
 
-      <!-- HEADLINE -->
-      <div class="headline">
-        <svg class="sig" viewBox="0 0 1200 220" role="img" aria-label="Laloo Birthday Sales">
-          <defs>
-            <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--pinkA)"/>
-              <stop offset="55%" stop-color="var(--pinkB)"/>
-              <stop offset="100%" stop-color="var(--pinkC)"/>
-            </linearGradient>
+          <mask id="revealMask">
+            <rect id="revealRect" x="0" y="0" width="0" height="200" fill="white"/>
+          </mask>
+        </defs>
 
-            <mask id="revealMask">
-              <rect id="revealRect" x="0" y="0" width="0" height="260" fill="white"></rect>
-            </mask>
-          </defs>
+        <text class="titleText" x="50%" y="52%" text-anchor="middle" mask="url(#revealMask)">
+          LALOO BIRTHDAY SALES
+        </text>
 
-          <text class="titleText" x="50%" y="52%" text-anchor="middle" mask="url(#revealMask)">
-            LALOO BIRTHDAY SALES
-          </text>
+        <path id="underlinePath"
+          d="M120,150 C360,168 560,168 760,150 960,132 1080,132 1140,150"/>
 
-          <path id="underlinePath"
-            d="M120,160
-               C340,178 520,178 700,160
-               C880,142 1010,142 1120,160" />
+        <circle id="pen" class="pen" r="8" cx="120" cy="150" fill="#fff"/>
+      </svg>
 
-          <circle id="penGlow" class="penTip" r="14" cx="120" cy="160" fill="rgba(255,90,150,0.32)"></circle>
-          <circle id="penTip"  class="penTip" r="8"  cx="120" cy="160" fill="white"></circle>
-        </svg>
-
-        <div class="subline" id="subline">14 years of color</div>
-      </div>
+      <div class="subline" id="subline">14 years of color</div>
     </div>
   </div>
+</div>
 
-  <script>
-    const REDIRECT_URL = "https://laloo.gr/el/content/121-laloo-birthday-festival-14-years-of-color";
+<script>
+  const duration = 10000;
+  const overlay = document.getElementById("overlay");
+  const underline = document.getElementById("underlinePath");
+  const pen = document.getElementById("pen");
+  const revealRect = document.getElementById("revealRect");
+  const subline = document.getElementById("subline");
 
-    const qs = new URLSearchParams(location.search);
-    const duration = Math.max(2000, Math.min(20000, Number(qs.get("duration")) || 10000));
+  const len = underline.getTotalLength();
+  underline.style.strokeDasharray = len;
+  underline.style.strokeDashoffset = len;
 
-    const overlay = document.getElementById("overlay");
-    let doneOnce = false;
+  setTimeout(()=>{
+    const start = performance.now();
+    pen.style.opacity = 1;
 
-    function done(reason){
-      if (doneOnce) return;
-      doneOnce = true;
-      overlay.classList.add("exit");
-      try { window.parent.postMessage({ type:"BIRTHDAY_LOADER_DONE", reason }, "*"); } catch(e){}
-      setTimeout(() => { try { window.top.location.href = REDIRECT_URL; } catch(e){} }, 180);
-    }
+    function anim(t){
+      const p = Math.min(1,(t-start)/1600);
+      const e = 1-Math.pow(1-p,3);
 
-    window.addEventListener("click", () => done("click"), { capture:true, once:true });
-    setTimeout(() => done("timeout"), duration);
+      underline.style.strokeDashoffset = len*(1-e);
+      const pt = underline.getPointAtLength(len*e);
+      pen.setAttribute("cx",pt.x);
+      pen.setAttribute("cy",pt.y);
+      revealRect.setAttribute("width",1200*e);
 
-    // underline writing + text reveal together
-    const WRITE_DELAY = 3600;
-    const WRITE_MS = 1650;
-
-    const underline = document.getElementById("underlinePath");
-    const penTip = document.getElementById("penTip");
-    const penGlow = document.getElementById("penGlow");
-    const revealRect = document.getElementById("revealRect");
-    const subline = document.getElementById("subline");
-
-    const len = underline.getTotalLength();
-    underline.style.strokeDasharray = String(len);
-    underline.style.strokeDashoffset = String(len);
-
-    function showSubline(){
-      subline.style.transition = "opacity 520ms ease-out";
-      subline.style.opacity = "1";
-    }
-
-    function animateWrite(){
-      const start = performance.now();
-      penTip.style.opacity = "1";
-      penGlow.style.opacity = "1";
-
-      function frame(now){
-        const t = Math.min(1, (now - start) / WRITE_MS);
-        const eased = 1 - Math.pow(1 - t, 3);
-
-        underline.style.strokeDashoffset = String(len * (1 - eased));
-
-        const p = underline.getPointAtLength(len * eased);
-        penTip.setAttribute("cx", p.x);
-        penTip.setAttribute("cy", p.y);
-        penGlow.setAttribute("cx", p.x);
-        penGlow.setAttribute("cy", p.y);
-
-        revealRect.setAttribute("width", String(1200 * eased));
-
-        if (t < 1) requestAnimationFrame(frame);
-        else {
-          penTip.style.opacity = "0";
-          penGlow.style.opacity = "0";
-          showSubline();
-        }
-      }
-      requestAnimationFrame(frame);
-    }
-
-    setTimeout(animateWrite, WRITE_DELAY);
-
-    // fireworks particles
-    const canvas = document.getElementById("fx");
-    const ctx = canvas.getContext("2d");
-
-    function resize(){
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    window.addEventListener("resize", resize);
-    resize();
-
-    const particles = [];
-    const startFx = performance.now();
-
-    function burst(x,y,power){
-      const count = Math.floor(44 + power * 34);
-      for(let i=0;i<count;i++){
-        const a = Math.random()*Math.PI*2;
-        const sp = (1.0 + Math.random()*3.0) * power;
-        particles.push({
-          x,y,
-          vx: Math.cos(a)*sp*120,
-          vy: Math.sin(a)*sp*120 - (80*power),
-          life: 900 + Math.random()*950,
-          born: performance.now(),
-          size: 1 + Math.random()*2.3,
-          hue: 338 + Math.random()*28,
-          sat: 88 + Math.random()*8,
-          lum: 60 + Math.random()*16
-        });
+      if(p<1) requestAnimationFrame(anim);
+      else{
+        pen.style.opacity=0;
+        subline.style.opacity=1;
       }
     }
+    requestAnimationFrame(anim);
+  },3200);
 
-    const schedule = [
-      { t: 2200, n: 1, p: 1.05 },
-      { t: 3200, n: 2, p: 1.00 },
-      { t: 5200, n: 2, p: 1.05 },
-      { t: 7400, n: 2, p: 0.95 },
-      { t: 9000, n: 1, p: 0.90 },
-    ];
-    let schIdx = 0;
-
-    function tick(){
-      const t = performance.now() - startFx;
-
-      while (schIdx < schedule.length && t >= schedule[schIdx].t){
-        for(let i=0;i<schedule[schIdx].n;i++){
-          const x = window.innerWidth*(0.22 + Math.random()*0.56);
-          const y = window.innerHeight*(0.16 + Math.random()*0.26);
-          burst(x,y,schedule[schIdx].p);
-        }
-        schIdx++;
-      }
-
-      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-
-      for(let i=particles.length-1;i>=0;i--){
-        const p = particles[i];
-        const age = performance.now()-p.born;
-        const k = age/p.life;
-        if(k>=1){ particles.splice(i,1); continue; }
-
-        const dt = 16/1000;
-        p.vy += 520*dt;
-        p.x += p.vx*dt;
-        p.y += p.vy*dt;
-
-        const alpha = (1-k)*0.9;
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(${p.hue},${p.sat}%,${p.lum}%,${alpha})`;
-        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-        ctx.fill();
-      }
-
-      if (t < duration + 900) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  </script>
+  overlay.addEventListener("click",()=>overlay.style.opacity=0,{once:true});
+  setTimeout(()=>overlay.style.opacity=0,duration);
+</script>
 </body>
 </html>
