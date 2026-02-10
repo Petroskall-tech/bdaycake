@@ -42,7 +42,12 @@
       opacity:1;
       transition: opacity .55s ease;
     }
-    .overlay.hidden{ opacity:0; pointer-events:none; }
+
+    /* ✅ when finished: fade out + stop catching clicks */
+    .overlay.gone{
+      opacity:0 !important;
+      pointer-events:none !important;
+    }
 
     #fx{
       position:absolute; inset:0;
@@ -180,7 +185,7 @@
     .prod.med{ width:116px; }
     .prod.big{ width:132px; }
 
-    /* Desktop: final "stay" positions around the box */
+    /* Desktop: final positions around the box */
     .p1{ --fx:-290px; --fy:-120px; --rot:-18deg; --s:1.02; }
     .p2{ --fx: 290px; --fy:-120px; --rot: 18deg; --s:1.02; }
     .p3{ --fx:-180px; --fy:-250px; --rot: 10deg; --s:1.00; }
@@ -190,10 +195,7 @@
     .p7{ --fx:-140px; --fy:  40px; --rot: 14deg; --s:0.98; }
     .p8{ --fx: 140px; --fy:  40px; --rot:-14deg; --s:0.98; }
 
-    /* single keyframe uses vars -> burst outward then settle and stay */
-    .fly{
-      animation: flyAndStay 2100ms cubic-bezier(.12,.95,.2,1.02) 2400ms forwards;
-    }
+    .fly{ animation: flyAndStay 2100ms cubic-bezier(.12,.95,.2,1.02) 2400ms forwards; }
     .d2{ animation-delay: 2480ms; }
     .d3{ animation-delay: 2560ms; }
     .d4{ animation-delay: 2620ms; }
@@ -360,22 +362,35 @@
   </div>
 
   <script>
-    // Close behavior (tap OR timeout)
+    // ✅ play only once per TAB (session) — prevents loop on navigation/refresh
+    try{
+      if (sessionStorage.getItem("laloo_bday_seen") === "1") {
+        const o = document.getElementById("overlay");
+        o.style.display = "none";
+      } else {
+        sessionStorage.setItem("laloo_bday_seen", "1");
+      }
+    }catch(e){}
+
     const qs = new URLSearchParams(location.search);
     const duration = Math.max(2000, Math.min(20000, Number(qs.get("duration")) || 10000));
     const overlay = document.getElementById("overlay");
+
     let doneOnce = false;
 
     function done(){
-  if (doneOnce) return;
-  doneOnce = true;
-  overlay.classList.add("hidden");
+      if (doneOnce) return;
+      doneOnce = true;
 
-  setTimeout(()=>{
-    window.location.href = "https://laloo.gr/el/content/121-laloo-birthday-festival-14-years-of-color";
-  }, 450); // μικρό delay για να σβήσει ωραία
-}
+      overlay.classList.add("gone");
 
+      // ✅ fully remove overlay so clicks go through (even inside iframe)
+      setTimeout(() => {
+        overlay.style.display = "none";
+      }, 550);
+    }
+
+    // close on click or timeout
     window.addEventListener("click", done, {capture:true, once:true});
     setTimeout(done, duration);
 
