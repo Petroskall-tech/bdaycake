@@ -367,10 +367,15 @@
     let doneOnce = false;
 
     function done(){
-      if (doneOnce) return;
-      doneOnce = true;
-      overlay.classList.add("hidden");
-    }
+  if (doneOnce) return;
+  doneOnce = true;
+  overlay.classList.add("hidden");
+
+  setTimeout(()=>{
+    window.location.href = "https://laloo.gr/el/content/121-laloo-birthday-festival-14-years-of-color";
+  }, 450); // μικρό delay για να σβήσει ωραία
+}
+
     window.addEventListener("click", done, {capture:true, once:true});
     setTimeout(done, duration);
 
