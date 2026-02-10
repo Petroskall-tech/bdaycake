@@ -17,7 +17,7 @@
       --red2:#b11226;
       --shadow: rgba(0,0,0,0.18);
 
-      /* text pink (strong for white background) */
+      /* strong pink for white bg */
       --pink1:#ff3f87;
       --pink2:#d6165a;
       --pink3:#9c0f3b;
@@ -66,7 +66,7 @@
       animation: hintIn 600ms ease-out 900ms forwards;
       user-select:none;
       white-space: nowrap;
-      z-index: 40;
+      z-index: 60;
     }
     @keyframes hintIn{ to{opacity:1} }
 
@@ -256,15 +256,15 @@
       100%{opacity:0; transform:translateX(-50%) translate(55px,-390px) scale(1.16) rotate(-55deg)}
     }
 
-    /* ---------- HANDWRITTEN HEADLINE (SVG) ---------- */
+    /* ---------- HANDWRITTEN HEADLINE ---------- */
     .headline{
       position:absolute;
       left:50%;
-      bottom: 42px;
+      bottom: 46px;
       transform: translateX(-50%);
-      width: min(92vw, 980px);
+      width: min(92vw, 760px); /* ✅ smaller so it doesn't go huge */
       text-align:center;
-      z-index: 40;
+      z-index: 50;
       pointer-events:none;
     }
 
@@ -274,21 +274,19 @@
       overflow: visible;
       filter:
         drop-shadow(0 14px 28px rgba(0,0,0,0.10))
-        drop-shadow(0 0 18px rgba(255, 90, 150, 0.22));
+        drop-shadow(0 0 18px rgba(255, 90, 150, 0.18));
     }
 
-    /* The stroke that “writes” */
     #sigPath{
       fill:none;
       stroke: rgba(214, 22, 90, 0.98);
-      stroke-width: 10;
+      stroke-width: 9;
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-dasharray: 2600;
       stroke-dashoffset: 2600;
     }
 
-    /* Pen tip */
     .penTip{
       filter:
         drop-shadow(0 0 14px rgba(255, 90, 150, 0.75))
@@ -296,32 +294,33 @@
       opacity: 0;
     }
 
-    /* Text reveal via mask (so it feels like writing) */
+    /* ✅ smaller + strong pink + soft shadow */
     .sigText{
       font-family: "Allura", cursive;
       font-weight: 400;
-      font-size: 150px;
-      letter-spacing: 0px;
+      font-size: clamp(54px, 7.2vw, 96px);
       fill: url(#pinkGrad);
-      opacity: 1;
+      /* soft shadow so it pops on white */
+      filter:
+        drop-shadow(0 10px 18px rgba(0,0,0,0.10))
+        drop-shadow(0 0 10px rgba(255, 90, 150, 0.18));
     }
 
-    /* Subline */
     .subline{
-      margin-top: -18px;
+      margin-top: -8px;
       font-family: "Playfair Display", serif;
       font-weight: 700;
       font-size: clamp(12px, 2.2vw, 18px);
       letter-spacing: 0.6px;
-      color: rgba(214, 22, 90, 0.82);
+      color: rgba(214, 22, 90, 0.84);
       text-shadow: 0 12px 22px rgba(0,0,0,0.10);
       opacity: 0;
     }
 
     @media (max-width: 480px){
-      #sigPath{ stroke-width: 8; }
-      .sigText{ font-size: 112px; }
-      .subline{ margin-top: -10px; }
+      #sigPath{ stroke-width: 7; }
+      .headline{ width: min(92vw, 520px); }
+      .subline{ margin-top: -4px; }
     }
   </style>
 </head>
@@ -360,13 +359,13 @@
               <stop offset="100%" stop-color="var(--pink3)"/>
             </linearGradient>
 
-            <!-- Mask reveals text from left-to-right (writing feel) -->
+            <!-- Mask reveals text as the pen writes -->
             <mask id="revealMask">
               <rect id="revealRect" x="0" y="0" width="0" height="260" fill="white"></rect>
             </mask>
           </defs>
 
-          <!-- The stroke path that gets written -->
+          <!-- Stroke path -->
           <path id="sigPath"
             d="M40,160
                C110,60 240,70 310,160
@@ -375,11 +374,11 @@
                C830,230 930,220 980,150
                C1040,75 1120,85 1160,165" />
 
-          <!-- Pen tip dot -->
-          <circle id="penTip" class="penTip" r="10" cx="40" cy="160" fill="white"></circle>
+          <!-- Pen tip -->
           <circle id="penGlow" class="penTip" r="16" cx="40" cy="160" fill="rgba(255,90,150,0.35)"></circle>
+          <circle id="penTip" class="penTip" r="9" cx="40" cy="160" fill="white"></circle>
 
-          <!-- The calligraphy text (revealed by mask) -->
+          <!-- Text (revealed by mask progressively) -->
           <text class="sigText" x="50%" y="63%" text-anchor="middle" mask="url(#revealMask)">
             LALOO BIRTHDAY SALES
           </text>
@@ -394,7 +393,7 @@
     // Redirect target
     const REDIRECT_URL = "https://laloo.gr/el/content/121-laloo-birthday-festival-14-years-of-color";
 
-    // Duration default 10s (can override with ?duration=10000)
+    // Duration default 10s (override ?duration=10000)
     const qs = new URLSearchParams(location.search);
     const duration = Math.max(2000, Math.min(20000, Number(qs.get("duration")) || 10000));
 
@@ -410,7 +409,7 @@
       // notify parent (safe)
       try { window.parent.postMessage({ type:"BIRTHDAY_LOADER_DONE", reason }, "*"); } catch(e){}
 
-      // redirect top
+      // redirect top (works even in iframe-only)
       setTimeout(() => {
         try { window.top.location.href = REDIRECT_URL; } catch(e) {}
       }, 180);
@@ -422,12 +421,9 @@
     // failsafe
     setTimeout(() => done("timeout"), duration);
 
-    // -------- Handwriting animation (realistic) --------
-    // Sync start to your previous timing: ~3.6s for title (after box opens)
-    const WRITE_DELAY = 3600;     // ms
-    const WRITE_MS = 1700;        // stroke write duration
-    const FILL_MS = 550;          // text reveal duration
-    const SUB_DELAY = WRITE_DELAY + WRITE_MS + 220;
+    // -------- Handwriting (stroke + text reveal together) --------
+    const WRITE_DELAY = 3600;  // sync with box opening
+    const WRITE_MS = 1750;
 
     const path = document.getElementById("sigPath");
     const penTip = document.getElementById("penTip");
@@ -435,12 +431,15 @@
     const revealRect = document.getElementById("revealRect");
     const subline = document.getElementById("subline");
 
-    // Prepare stroke length
     const len = path.getTotalLength();
     path.style.strokeDasharray = String(len);
     path.style.strokeDashoffset = String(len);
 
-    // Animate stroke + pen following
+    function showSubline(){
+      subline.style.transition = "opacity 520ms ease-out";
+      subline.style.opacity = "1";
+    }
+
     function animateWrite(){
       const start = performance.now();
       penTip.style.opacity = "1";
@@ -450,48 +449,27 @@
         const t = Math.min(1, (now - start) / WRITE_MS);
         const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
 
-        const draw = len * (1 - eased);
-        path.style.strokeDashoffset = String(draw);
+        // stroke draw
+        path.style.strokeDashoffset = String(len * (1 - eased));
 
-        // Move pen tip along the path
+        // pen position
         const p = path.getPointAtLength(len * eased);
         penTip.setAttribute("cx", p.x);
         penTip.setAttribute("cy", p.y);
         penGlow.setAttribute("cx", p.x);
         penGlow.setAttribute("cy", p.y);
 
-        if (t < 1) {
-          requestAnimationFrame(frame);
-        } else {
-          // pen fades out a bit at the end
-          penTip.style.opacity = "0.0";
-          penGlow.style.opacity = "0.0";
-          // Then reveal text
-          animateFill();
+        // ✅ reveal text at the same time as writing (mask width follows progress)
+        revealRect.setAttribute("width", String(1200 * eased));
+
+        if (t < 1) requestAnimationFrame(frame);
+        else {
+          penTip.style.opacity = "0";
+          penGlow.style.opacity = "0";
+          showSubline();
         }
       }
       requestAnimationFrame(frame);
-    }
-
-    // Reveal text left-to-right (mask width grows)
-    function animateFill(){
-      const start = performance.now();
-      const targetW = 1200;
-
-      function frame(now){
-        const t = Math.min(1, (now - start) / FILL_MS);
-        const eased = t*t*(3-2*t); // smoothstep
-        revealRect.setAttribute("width", String(targetW * eased));
-
-        if (t < 1) requestAnimationFrame(frame);
-        else showSubline();
-      }
-      requestAnimationFrame(frame);
-    }
-
-    function showSubline(){
-      subline.style.transition = "opacity 520ms ease-out";
-      subline.style.opacity = "1";
     }
 
     setTimeout(animateWrite, WRITE_DELAY);
