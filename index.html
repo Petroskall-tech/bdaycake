@@ -4,13 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Laloo Birthday Loader</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg: rgba(255,255,255,0.92);
       --red1:#c4142d;
       --red2:#b11226;
       --shadow: rgba(0,0,0,0.18);
-      --glow: rgba(255,165,180,0.55);
+
+      /* text pink (strong for white background) */
+      --pink1:#ff3f87;
+      --pink2:#d6165a;
+      --pink3:#9c0f3b;
+
+      --glow: rgba(255, 90, 150, 0.55);
     }
 
     html,body{height:100%; margin:0;}
@@ -39,8 +51,8 @@
 
     .stage{
       position:relative;
-      width:min(740px, 94vw);
-      height:min(600px, 86vh);
+      width:min(760px, 94vw);
+      height:min(620px, 86vh);
       display:flex; align-items:center; justify-content:center;
     }
 
@@ -54,13 +66,13 @@
       animation: hintIn 600ms ease-out 900ms forwards;
       user-select:none;
       white-space: nowrap;
-      z-index: 20;
+      z-index: 40;
     }
     @keyframes hintIn{ to{opacity:1} }
 
     .floor{
       position:absolute;
-      width:min(460px, 82vw);
+      width:min(480px, 84vw);
       height:34px;
       bottom:120px;
       background: radial-gradient(closest-side, rgba(0,0,0,0.22), transparent 70%);
@@ -170,25 +182,22 @@
       100%{ opacity:0; transform: translateX(-50%) scale(6.2); }
     }
 
-    /* PRODUCTS (bigger + correct keyframes) */
+    /* PRODUCTS */
     .prod{
       position:absolute;
       left:50%;
-      top: 250px; /* burst origin */
+      top: 250px;
       transform: translateX(-50%) translateY(40px) scale(0.72);
       opacity:0;
       will-change: transform, opacity;
       filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18));
       pointer-events:none;
-      z-index: 9; /* below text, above background */
+      z-index: 9;
     }
-
-    /* bigger sizes desktop */
     .prod.small{ width: 96px; }
     .prod.med{ width: 110px; }
     .prod.big{ width: 124px; }
 
-    /* trajectories with visible mid-phase */
     .a1{ animation: flyA1 2300ms cubic-bezier(.12,.95,.2,1.02) 2450ms forwards; }
     .a2{ animation: flyA2 2400ms cubic-bezier(.12,.95,.2,1.02) 2520ms forwards; }
     .a3{ animation: flyA3 2500ms cubic-bezier(.12,.95,.2,1.02) 2580ms forwards; }
@@ -247,55 +256,76 @@
       100%{opacity:0; transform:translateX(-50%) translate(55px,-390px) scale(1.16) rotate(-55deg)}
     }
 
-    /* TEXT — always on top, centered */
-    .title{
+    /* ---------- HANDWRITTEN HEADLINE (SVG) ---------- */
+    .headline{
       position:absolute;
       left:50%;
-      bottom: 78px;
+      bottom: 42px;
       transform: translateX(-50%);
+      width: min(92vw, 980px);
       text-align:center;
-      font-weight: 900;
-      letter-spacing: 3px;
-      font-size: clamp(20px, 3.6vw, 38px);
-      color: #111;
-      opacity:0;
-      text-transform: uppercase;
-      filter: drop-shadow(0 10px 26px rgba(0,0,0,0.10));
-      animation: titleIn 900ms ease-out 3600ms forwards;
-      white-space: nowrap;
-      z-index: 30;
+      z-index: 40;
       pointer-events:none;
     }
-    .subtitle{
-      position:absolute;
-      left:50%;
-      bottom: 46px;
-      transform: translateX(-50%);
-      font-weight: 700;
-      opacity:0;
-      font-size: clamp(12px, 2.2vw, 16px);
-      color: rgba(17,17,17,0.70);
-      letter-spacing: 1px;
-      animation: subtitleIn 900ms ease-out 3900ms forwards;
-      white-space: nowrap;
-      z-index: 30;
-      pointer-events:none;
-    }
-    @keyframes titleIn{ to { opacity:1; } }
-    @keyframes subtitleIn{ to { opacity:1; } }
 
-    /* mobile safety */
+    .sig{
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      filter:
+        drop-shadow(0 14px 28px rgba(0,0,0,0.10))
+        drop-shadow(0 0 18px rgba(255, 90, 150, 0.22));
+    }
+
+    /* The stroke that “writes” */
+    #sigPath{
+      fill:none;
+      stroke: rgba(214, 22, 90, 0.98);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 2600;
+      stroke-dashoffset: 2600;
+    }
+
+    /* Pen tip */
+    .penTip{
+      filter:
+        drop-shadow(0 0 14px rgba(255, 90, 150, 0.75))
+        drop-shadow(0 10px 20px rgba(0,0,0,0.10));
+      opacity: 0;
+    }
+
+    /* Text reveal via mask (so it feels like writing) */
+    .sigText{
+      font-family: "Allura", cursive;
+      font-weight: 400;
+      font-size: 150px;
+      letter-spacing: 0px;
+      fill: url(#pinkGrad);
+      opacity: 1;
+    }
+
+    /* Subline */
+    .subline{
+      margin-top: -18px;
+      font-family: "Playfair Display", serif;
+      font-weight: 700;
+      font-size: clamp(12px, 2.2vw, 18px);
+      letter-spacing: 0.6px;
+      color: rgba(214, 22, 90, 0.82);
+      text-shadow: 0 12px 22px rgba(0,0,0,0.10);
+      opacity: 0;
+    }
+
     @media (max-width: 480px){
-      .prod.small{ width: 70px; }
-      .prod.med{ width: 78px; }
-      .prod.big{ width: 86px; }
-      .title,.subtitle{ white-space: normal; text-align:center; }
-      .boxWrap{ width:210px; height:210px; }
-      .boxBody{ width:210px; }
-      .boxLid{ width:235px; }
+      #sigPath{ stroke-width: 8; }
+      .sigText{ font-size: 112px; }
+      .subline{ margin-top: -10px; }
     }
   </style>
 </head>
+
 <body>
   <div id="overlay" class="overlay">
     <canvas id="fx"></canvas>
@@ -320,8 +350,43 @@
       <img class="prod med  a7" src="https://assets.laloo.gr/img/cms/BASE.png" alt="">
       <img class="prod med  a8" src="https://assets.laloo.gr/img/cms/Antifungal_15ml_Transparent.png" alt="">
 
-      <div class="title">LALOO BIRTHDAY SALES</div>
-      <div class="subtitle">14 years of color</div>
+      <!-- HANDWRITTEN HEADLINE -->
+      <div class="headline">
+        <svg class="sig" viewBox="0 0 1200 240" role="img" aria-label="Laloo Birthday Sales">
+          <defs>
+            <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--pink1)"/>
+              <stop offset="55%" stop-color="var(--pink2)"/>
+              <stop offset="100%" stop-color="var(--pink3)"/>
+            </linearGradient>
+
+            <!-- Mask reveals text from left-to-right (writing feel) -->
+            <mask id="revealMask">
+              <rect id="revealRect" x="0" y="0" width="0" height="260" fill="white"></rect>
+            </mask>
+          </defs>
+
+          <!-- The stroke path that gets written -->
+          <path id="sigPath"
+            d="M40,160
+               C110,60 240,70 310,160
+               C360,220 440,220 490,160
+               C560,70 700,70 770,160
+               C830,230 930,220 980,150
+               C1040,75 1120,85 1160,165" />
+
+          <!-- Pen tip dot -->
+          <circle id="penTip" class="penTip" r="10" cx="40" cy="160" fill="white"></circle>
+          <circle id="penGlow" class="penTip" r="16" cx="40" cy="160" fill="rgba(255,90,150,0.35)"></circle>
+
+          <!-- The calligraphy text (revealed by mask) -->
+          <text class="sigText" x="50%" y="63%" text-anchor="middle" mask="url(#revealMask)">
+            LALOO BIRTHDAY SALES
+          </text>
+        </svg>
+
+        <div class="subline" id="subline">14 years of color</div>
+      </div>
     </div>
   </div>
 
@@ -334,7 +399,6 @@
     const duration = Math.max(2000, Math.min(20000, Number(qs.get("duration")) || 10000));
 
     const overlay = document.getElementById("overlay");
-    const EXIT_MS = 650;
     let doneOnce = false;
 
     function done(reason){
@@ -343,10 +407,10 @@
 
       overlay.classList.add("exit");
 
-      // If embedded in iframe and parent listens, notify it too (safe)
+      // notify parent (safe)
       try { window.parent.postMessage({ type:"BIRTHDAY_LOADER_DONE", reason }, "*"); } catch(e){}
 
-      // Redirect top (works even when iframe-only)
+      // redirect top
       setTimeout(() => {
         try { window.top.location.href = REDIRECT_URL; } catch(e) {}
       }, 180);
@@ -358,7 +422,81 @@
     // failsafe
     setTimeout(() => done("timeout"), duration);
 
-    // Fireworks particles (same classy palette)
+    // -------- Handwriting animation (realistic) --------
+    // Sync start to your previous timing: ~3.6s for title (after box opens)
+    const WRITE_DELAY = 3600;     // ms
+    const WRITE_MS = 1700;        // stroke write duration
+    const FILL_MS = 550;          // text reveal duration
+    const SUB_DELAY = WRITE_DELAY + WRITE_MS + 220;
+
+    const path = document.getElementById("sigPath");
+    const penTip = document.getElementById("penTip");
+    const penGlow = document.getElementById("penGlow");
+    const revealRect = document.getElementById("revealRect");
+    const subline = document.getElementById("subline");
+
+    // Prepare stroke length
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = String(len);
+    path.style.strokeDashoffset = String(len);
+
+    // Animate stroke + pen following
+    function animateWrite(){
+      const start = performance.now();
+      penTip.style.opacity = "1";
+      penGlow.style.opacity = "1";
+
+      function frame(now){
+        const t = Math.min(1, (now - start) / WRITE_MS);
+        const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+
+        const draw = len * (1 - eased);
+        path.style.strokeDashoffset = String(draw);
+
+        // Move pen tip along the path
+        const p = path.getPointAtLength(len * eased);
+        penTip.setAttribute("cx", p.x);
+        penTip.setAttribute("cy", p.y);
+        penGlow.setAttribute("cx", p.x);
+        penGlow.setAttribute("cy", p.y);
+
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          // pen fades out a bit at the end
+          penTip.style.opacity = "0.0";
+          penGlow.style.opacity = "0.0";
+          // Then reveal text
+          animateFill();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // Reveal text left-to-right (mask width grows)
+    function animateFill(){
+      const start = performance.now();
+      const targetW = 1200;
+
+      function frame(now){
+        const t = Math.min(1, (now - start) / FILL_MS);
+        const eased = t*t*(3-2*t); // smoothstep
+        revealRect.setAttribute("width", String(targetW * eased));
+
+        if (t < 1) requestAnimationFrame(frame);
+        else showSubline();
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function showSubline(){
+      subline.style.transition = "opacity 520ms ease-out";
+      subline.style.opacity = "1";
+    }
+
+    setTimeout(animateWrite, WRITE_DELAY);
+
+    // -------- Fireworks particles (classy palette) --------
     const canvas = document.getElementById("fx");
     const ctx = canvas.getContext("2d");
 
@@ -374,7 +512,7 @@
     resize();
 
     const particles = [];
-    const start = performance.now();
+    const startFx = performance.now();
 
     function burst(x,y,power){
       const count = Math.floor(44 + power * 34);
@@ -388,9 +526,9 @@
           life: 900 + Math.random()*950,
           born: performance.now(),
           size: 1 + Math.random()*2.3,
-          hue: 340 + Math.random()*25,
+          hue: 338 + Math.random()*28,
           sat: 88 + Math.random()*8,
-          lum: 62 + Math.random()*14
+          lum: 60 + Math.random()*16
         });
       }
     }
@@ -405,7 +543,7 @@
     let schIdx = 0;
 
     function tick(){
-      const t = performance.now() - start;
+      const t = performance.now() - startFx;
 
       while (schIdx < schedule.length && t >= schedule[schIdx].t){
         for(let i=0;i<schedule[schIdx].n;i++){
