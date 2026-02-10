@@ -21,9 +21,19 @@
       --pinkB:#d6165a;
       --pinkC:#9c0f3b;
       --glow: rgba(255, 90, 150, 0.55);
+
+      /* ✅ dynamic viewport (fixes mobile browser bars) */
+      --vh: 100vh; /* fallback */
     }
 
-    html,body{height:100%; margin:0;}
+    @supports (height: 100dvh){
+      :root{ --vh: 100dvh; }
+    }
+    @supports (height: 100svh){
+      :root{ --vh: 100svh; }
+    }
+
+    html,body{ height: var(--vh); margin:0; }
     body{
       overflow:hidden;
       background:transparent;
@@ -32,6 +42,7 @@
 
     .overlay{
       position:fixed; inset:0;
+      min-height: var(--vh); /* ✅ important on mobile */
       display:flex; align-items:center; justify-content:center;
       background:
         radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,0.30), transparent 58%),
@@ -58,10 +69,15 @@
     .stage{
       position:relative;
       width:min(860px, 96vw);
-      height:min(720px, 90vh);
+      height:min(720px, calc(var(--vh) - 16px));
       display:flex; align-items:center; justify-content:center;
+
+      /* ✅ keep bottom content away from browser UI */
+      padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
     }
 
+    /* (if you keep iframe pointer-events:none, hint won't be clickable anyway) */
     .hint{
       position:absolute;
       top:14px; left:50%;
@@ -235,12 +251,14 @@
     .headline{
       position:absolute;
       left:50%;
-      bottom: 18px;
       transform: translateX(-50%);
       width: min(92vw, 720px);
       text-align:center;
       z-index: 50;
       pointer-events:none;
+
+      /* ✅ keep above browser bottom bars */
+      bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     }
 
     .sig{ width:100%; height:auto; overflow:visible; }
@@ -281,12 +299,15 @@
       transition: opacity .52s ease;
     }
 
-    /* MOBILE: keep products inside + bigger text + lower headline */
+    /* MOBILE: keep products inside + bigger text */
     @media (max-width: 520px){
       .boxWrap{ bottom: 240px; transform: translateX(-50%) translateY(18px) scale(1.06); }
       .floor{ bottom: 185px; }
 
-      .headline{ bottom: -6px; width: 94vw; }
+      .headline{
+        width: 94vw;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      }
       .titleText{ font-size: clamp(30px, 9vw, 46px); }
       .subline{ font-size: 14px; }
 
@@ -312,7 +333,7 @@
     <canvas id="fx"></canvas>
 
     <div class="stage">
-      <div class="hint">Tap anywhere to continue</div>
+      <div class="hint">Birthday loader…</div>
       <div class="floor"></div>
 
       <!-- PRODUCTS (burst + stay) -->
@@ -362,7 +383,7 @@
   </div>
 
   <script>
-    // ✅ play only once per TAB (session) — prevents loop on navigation/refresh
+    // ✅ play only once per TAB (session)
     try{
       if (sessionStorage.getItem("laloo_bday_seen") === "1") {
         const o = document.getElementById("overlay");
@@ -384,13 +405,13 @@
 
       overlay.classList.add("gone");
 
-      // ✅ fully remove overlay so clicks go through (even inside iframe)
+      // ✅ fully remove overlay so clicks go through
       setTimeout(() => {
         overlay.style.display = "none";
       }, 550);
     }
 
-    // close on click or timeout
+    // if iframe has pointer-events:none, clicks won't reach this anyway, but timeout will.
     window.addEventListener("click", done, {capture:true, once:true});
     setTimeout(done, duration);
 
