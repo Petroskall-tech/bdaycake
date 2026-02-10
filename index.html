@@ -301,13 +301,18 @@
 
     /* MOBILE: keep products inside + bigger text */
     @media (max-width: 520px){
-      .boxWrap{ bottom: 240px; transform: translateX(-50%) translateY(18px) scale(1.06); }
-      .floor{ bottom: 185px; }
+      ..boxWrap{
+  bottom: auto;
+  top: 50%;
+  transform: translate(-50%, -60%) scale(1.05);
+}
 
       .headline{
-        width: 94vw;
-        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-      }
+  width: 94vw;
+  bottom: auto;
+  top: calc(50% + 210px);
+  transform: translateX(-50%);
+}
       .titleText{ font-size: clamp(30px, 9vw, 46px); }
       .subline{ font-size: 14px; }
 
