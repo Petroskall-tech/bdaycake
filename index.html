@@ -8,216 +8,497 @@
   <!-- Geologica -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@500;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@600;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --bg: rgba(255,255,255,0.94);
       --red1:#c4142d;
       --red2:#b11226;
+      --shadow: rgba(0,0,0,0.18);
 
       --pinkA:#ff2f7d;
       --pinkB:#d6165a;
       --pinkC:#9c0f3b;
+      --glow: rgba(255, 90, 150, 0.55);
     }
 
-    html,body{height:100%;margin:0;}
-    body{overflow:hidden;background:transparent;}
+    html,body{height:100%; margin:0;}
+    body{
+      overflow:hidden;
+      background:transparent;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
 
     .overlay{
       position:fixed; inset:0;
       display:flex; align-items:center; justify-content:center;
       background:
-        radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,.30), transparent 58%),
+        radial-gradient(1200px 700px at 50% 40%, rgba(255,210,220,0.30), transparent 58%),
         var(--bg);
-      z-index:9999;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 999999;
+      opacity:1;
+      transition: opacity .55s ease;
     }
+    .overlay.hidden{ opacity:0; pointer-events:none; }
 
-    #fx{position:absolute; inset:0; pointer-events:none;}
+    #fx{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      pointer-events:none;
+    }
 
     .stage{
       position:relative;
-      width:min(760px,94vw);
-      height:min(640px,88vh);
+      width:min(860px, 96vw);
+      height:min(720px, 90vh);
+      display:flex; align-items:center; justify-content:center;
     }
 
     .hint{
-      position:absolute; top:14px; left:50%;
-      transform:translateX(-50%);
+      position:absolute;
+      top:14px; left:50%;
+      transform: translateX(-50%);
       font-size:12px;
-      opacity:.55;
-      font-family:system-ui;
+      color:rgba(17,17,17,0.55);
+      user-select:none;
+      white-space:nowrap;
+      z-index:60;
+    }
+
+    .floor{
+      position:absolute;
+      width:min(560px, 86vw);
+      height:36px;
+      bottom:170px;
+      background: radial-gradient(closest-side, rgba(0,0,0,0.20), transparent 72%);
+      filter: blur(2px);
+      opacity:.95;
+      z-index: 1;
     }
 
     /* BOX */
     .boxWrap{
       position:absolute;
       left:50%;
-      bottom:170px;
-      transform:translateX(-50%);
-      width:240px; height:240px;
+      bottom:210px;
+      transform: translateX(-50%) translateY(24px) scale(1);
+      width: 280px;
+      height: 280px;
+      z-index: 10;
+
+      opacity:0;
+      animation: boxIn 700ms cubic-bezier(.2,.9,.25,1.2) 120ms forwards,
+                 boxShake 1600ms ease-in-out 1200ms forwards;
+    }
+
+    @keyframes boxIn{
+      from{ opacity:0; transform:translateX(-50%) translateY(44px) scale(.88); }
+      to  { opacity:1; transform:translateX(-50%) translateY(24px) scale(1); }
+    }
+
+    @keyframes boxShake{
+      0%{transform:translateX(-50%) translateY(24px) rotate(0deg)}
+      15%{transform:translateX(-50%) translateY(24px) rotate(-2deg)}
+      30%{transform:translateX(-50%) translateY(24px) rotate(2deg)}
+      45%{transform:translateX(-50%) translateY(24px) rotate(-2.6deg)}
+      60%{transform:translateX(-50%) translateY(24px) rotate(2.6deg)}
+      75%{transform:translateX(-50%) translateY(24px) rotate(-1.2deg)}
+      90%{transform:translateX(-50%) translateY(24px) rotate(1.2deg)}
+      100%{transform:translateX(-50%) translateY(24px) rotate(0deg)}
     }
 
     .boxBody{
       position:absolute;
-      bottom:0; left:50%;
-      transform:translateX(-50%);
-      width:240px; height:170px;
-      border-radius:20px;
-      background:linear-gradient(180deg,var(--red1),var(--red2));
+      left:50%; bottom:0;
+      width:280px; height:200px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, var(--red1), var(--red2));
+      border-radius: 24px;
+      box-shadow: 0 18px 44px var(--shadow);
+      overflow:hidden;
+    }
+    .boxBody::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.16), transparent 32%, rgba(255,255,255,0.08));
+      transform: translateX(-24%);
+      opacity:0.85;
+    }
+    .boxBody::after{
+      content:"";
+      position:absolute;
+      left:50%; bottom:-16px;
+      width:360px; height:320px;
+      transform: translateX(-50%) translateY(92px) scale(0.95);
+      background: radial-gradient(circle at 50% 70%, rgba(255,255,255,0.92), rgba(255,170,190,0.42), transparent 62%);
+      opacity:0;
+      filter: blur(6px);
+      animation: innerGlow 1800ms ease-out 1950ms forwards;
+    }
+    @keyframes innerGlow{
+      0%{ opacity:0; transform: translateX(-50%) translateY(98px) scale(0.95); }
+      35%{ opacity:1; transform: translateX(-50%) translateY(28px) scale(1.02); }
+      100%{ opacity:0.38; transform: translateX(-50%) translateY(-10px) scale(1.06); }
     }
 
     .boxLid{
       position:absolute;
-      left:50%; top:20px;
-      transform-origin:50% 90%;
-      transform:translateX(-50%) rotate(-28deg);
-      width:270px; height:72px;
-      border-radius:20px;
-      background:linear-gradient(180deg,#d92b45,var(--red1));
+      left:50%; top:18px;
+      width:315px; height:82px;
+      transform: translateX(-50%) translateY(0) rotate(0deg);
+      transform-origin: 50% 92%;
+      background: linear-gradient(180deg, #d92b45, var(--red1));
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+      animation: lidOpen 2400ms cubic-bezier(.16,.95,.18,1.05) 1550ms forwards;
+    }
+
+    @keyframes lidOpen{
+      0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
+      18%  { transform: translateX(-50%) translateY(-8px) rotate(-4deg); }
+      48%  { transform: translateX(-50%) translateY(-34px) rotate(-16deg); }
+      78%  { transform: translateX(-50%) translateY(-70px) rotate(-28deg); }
+      100% { transform: translateX(-50%) translateY(-84px) rotate(-35deg); }
+    }
+
+    /* PRODUCTS (burst then settle & stay) */
+    .prod{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%) scale(.7);
+      opacity:0;
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18));
+      pointer-events:none;
+      z-index: 20; /* above box */
+      will-change: transform, opacity;
+    }
+    .prod.small{ width:98px; }
+    .prod.med{ width:116px; }
+    .prod.big{ width:132px; }
+
+    /* Desktop: final "stay" positions around the box */
+    .p1{ --fx:-290px; --fy:-120px; --rot:-18deg; --s:1.02; }
+    .p2{ --fx: 290px; --fy:-120px; --rot: 18deg; --s:1.02; }
+    .p3{ --fx:-180px; --fy:-250px; --rot: 10deg; --s:1.00; }
+    .p4{ --fx: 180px; --fy:-250px; --rot:-10deg; --s:1.00; }
+    .p5{ --fx:-360px; --fy:  10px; --rot:-28deg; --s:1.04; }
+    .p6{ --fx: 360px; --fy:  10px; --rot: 28deg; --s:1.04; }
+    .p7{ --fx:-140px; --fy:  40px; --rot: 14deg; --s:0.98; }
+    .p8{ --fx: 140px; --fy:  40px; --rot:-14deg; --s:0.98; }
+
+    /* single keyframe uses vars -> burst outward then settle and stay */
+    .fly{
+      animation: flyAndStay 2100ms cubic-bezier(.12,.95,.2,1.02) 2400ms forwards;
+    }
+    .d2{ animation-delay: 2480ms; }
+    .d3{ animation-delay: 2560ms; }
+    .d4{ animation-delay: 2620ms; }
+    .d5{ animation-delay: 2460ms; }
+    .d6{ animation-delay: 2520ms; }
+    .d7{ animation-delay: 2580ms; }
+    .d8{ animation-delay: 2660ms; }
+
+    @keyframes flyAndStay{
+      0%{
+        opacity:0;
+        transform: translate(-50%,-50%) translate(0px, 60px) scale(.60) rotate(0deg);
+      }
+      18%{
+        opacity:1;
+        transform: translate(-50%,-50%) translate(calc(var(--fx)*0.55), calc(var(--fy)*0.35))
+                  scale(1.05) rotate(calc(var(--rot)*0.5));
+      }
+      55%{
+        opacity:1;
+        transform: translate(-50%,-50%) translate(calc(var(--fx)*1.05), calc(var(--fy)*1.05))
+                  scale(calc(var(--s) + .10)) rotate(calc(var(--rot) * 1.05));
+      }
+      78%{
+        opacity:1;
+        transform: translate(-50%,-50%) translate(calc(var(--fx)*0.92), calc(var(--fy)*0.92))
+                  scale(calc(var(--s) + .04)) rotate(calc(var(--rot) * 0.92));
+      }
+      100%{
+        opacity:1;
+        transform: translate(-50%,-50%) translate(var(--fx), var(--fy))
+                  scale(var(--s)) rotate(var(--rot));
+      }
     }
 
     /* HEADLINE */
     .headline{
       position:absolute;
       left:50%;
-      bottom:0;               /* 🔥 πολύ πιο κάτω στο mobile */
-      transform:translateX(-50%);
-      width:min(92vw,640px);
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: min(92vw, 720px);
       text-align:center;
+      z-index: 50;
       pointer-events:none;
     }
 
-    .sig{width:100%;height:auto;}
+    .sig{ width:100%; height:auto; overflow:visible; }
 
     .titleText{
       font-family:"Geologica",system-ui,sans-serif;
       font-weight:900;
       text-transform:uppercase;
-      letter-spacing:.6px;
-      font-size:clamp(28px,4vw,42px);
-      fill:url(#pinkGrad);
+      letter-spacing:.7px;
+      font-size: clamp(28px, 3.6vw, 44px);
+      fill: url(#pinkGrad);
       filter:
-        drop-shadow(0 8px 14px rgba(0,0,0,.14))
-        drop-shadow(0 0 10px rgba(255,80,140,.25));
+        drop-shadow(0 10px 18px rgba(0,0,0,0.14))
+        drop-shadow(0 0 10px rgba(255,90,150,0.20));
     }
 
-    .subline{
-      margin-top:6px;
-      font-family:"Playfair Display",serif;
-      font-weight:700;
-      font-size:15px;
-      color:#d6165a;
-      opacity:0;
-      transition:.5s;
-    }
-
-    /* underline */
     #underlinePath{
       fill:none;
-      stroke:#d6165a;
-      stroke-width:7;
-      stroke-linecap:round;
-      stroke-dasharray:2000;
-      stroke-dashoffset:2000;
+      stroke: rgba(214, 22, 90, 0.95);
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 2000;
+      stroke-dashoffset: 2000;
+      filter: drop-shadow(0 0 16px rgba(255, 90, 150, 0.25));
     }
 
-    .pen{opacity:0}
+    .penTip{ opacity:0; filter: drop-shadow(0 0 14px rgba(255, 90, 150, 0.75)); }
 
-    /* MOBILE BOOST */
-    @media (max-width:520px){
-      .headline{
-        bottom:-6px;            /* 🔥 ακόμη πιο κάτω */
-        width:94vw;
-      }
-      .titleText{
-        font-size:clamp(30px,9vw,44px); /* 🔥 ΠΟΛΥ πιο μεγάλο */
-      }
-      .subline{
-        font-size:14px;
-      }
+    .subline{
+      margin-top: 6px;
+      font-family:"Playfair Display",serif;
+      font-weight:700;
+      font-size: clamp(12px, 2vw, 16px);
+      color: rgba(214, 22, 90, 0.82);
+      text-shadow: 0 12px 22px rgba(0,0,0,0.10);
+      opacity: 0;
+      transition: opacity .52s ease;
+    }
+
+    /* MOBILE: keep products inside + bigger text + lower headline */
+    @media (max-width: 520px){
+      .boxWrap{ bottom: 240px; transform: translateX(-50%) translateY(18px) scale(1.06); }
+      .floor{ bottom: 185px; }
+
+      .headline{ bottom: -6px; width: 94vw; }
+      .titleText{ font-size: clamp(30px, 9vw, 46px); }
+      .subline{ font-size: 14px; }
+
+      /* pull final positions inward so they don't fly off-screen */
+      .p1{ --fx:-170px; --fy:-90px;  --rot:-16deg; --s:0.98; }
+      .p2{ --fx: 170px; --fy:-90px;  --rot: 16deg; --s:0.98; }
+      .p3{ --fx:-105px; --fy:-190px; --rot: 10deg; --s:0.95; }
+      .p4{ --fx: 105px; --fy:-190px; --rot:-10deg; --s:0.95; }
+      .p5{ --fx:-195px; --fy:  10px; --rot:-22deg; --s:0.98; }
+      .p6{ --fx: 195px; --fy:  10px; --rot: 22deg; --s:0.98; }
+      .p7{ --fx:-95px;  --fy:  50px; --rot: 12deg; --s:0.92; }
+      .p8{ --fx: 95px;  --fy:  50px; --rot:-12deg; --s:0.92; }
+
+      .prod.big{ width:120px; }
+      .prod.med{ width:106px; }
+      .prod.small{ width:92px; }
     }
   </style>
 </head>
 
 <body>
-<div class="overlay" id="overlay">
-  <canvas id="fx"></canvas>
+  <div class="overlay" id="overlay">
+    <canvas id="fx"></canvas>
 
-  <div class="stage">
-    <div class="hint">Tap anywhere to continue</div>
+    <div class="stage">
+      <div class="hint">Tap anywhere to continue</div>
+      <div class="floor"></div>
 
-    <div class="boxWrap">
-      <div class="boxLid"></div>
-      <div class="boxBody"></div>
-    </div>
+      <!-- PRODUCTS (burst + stay) -->
+      <img class="prod big  fly p1" src="https://assets.laloo.gr/img/cms/Graphen_Base_Blush_Shimmer_15ml.png" alt="">
+      <img class="prod med  fly p2 d2" src="https://assets.laloo.gr/img/cms/Laloo_Non_Wipe_Top_Coat.png" alt="">
+      <img class="prod big  fly p3 d3" src="https://assets.laloo.gr/img/cms/Star_top_15ml.png" alt="">
+      <img class="prod med  fly p4 d4" src="https://assets.laloo.gr/img/cms/Primer_Bonder_15ml_Transparent.png" alt="">
+      <img class="prod big  fly p5 d5" src="https://assets.laloo.gr/img/cms/GEL_POLISH_019.png" alt="">
+      <img class="prod big  fly p6 d6" src="https://assets.laloo.gr/img/cms/BIAB.png" alt="">
+      <img class="prod med  fly p7 d7" src="https://assets.laloo.gr/img/cms/BASE.png" alt="">
+      <img class="prod med  fly p8 d8" src="https://assets.laloo.gr/img/cms/Antifungal_15ml_Transparent.png" alt="">
 
-    <div class="headline">
-      <svg class="sig" viewBox="0 0 1200 200">
-        <defs>
-          <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="var(--pinkA)"/>
-            <stop offset="55%" stop-color="var(--pinkB)"/>
-            <stop offset="100%" stop-color="var(--pinkC)"/>
-          </linearGradient>
+      <!-- BOX -->
+      <div class="boxWrap">
+        <div class="boxLid"></div>
+        <div class="boxBody"></div>
+      </div>
 
-          <mask id="revealMask">
-            <rect id="revealRect" x="0" y="0" width="0" height="200" fill="white"/>
-          </mask>
-        </defs>
+      <!-- HEADLINE -->
+      <div class="headline">
+        <svg class="sig" viewBox="0 0 1200 220" role="img" aria-label="Laloo Birthday Sales">
+          <defs>
+            <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--pinkA)"/>
+              <stop offset="55%" stop-color="var(--pinkB)"/>
+              <stop offset="100%" stop-color="var(--pinkC)"/>
+            </linearGradient>
 
-        <text class="titleText" x="50%" y="52%" text-anchor="middle" mask="url(#revealMask)">
-          LALOO BIRTHDAY SALES
-        </text>
+            <mask id="revealMask">
+              <rect id="revealRect" x="0" y="0" width="0" height="260" fill="white"></rect>
+            </mask>
+          </defs>
 
-        <path id="underlinePath"
-          d="M120,150 C360,168 560,168 760,150 960,132 1080,132 1140,150"/>
+          <text class="titleText" x="50%" y="52%" text-anchor="middle" mask="url(#revealMask)">
+            LALOO BIRTHDAY SALES
+          </text>
 
-        <circle id="pen" class="pen" r="8" cx="120" cy="150" fill="#fff"/>
-      </svg>
+          <path id="underlinePath" d="M120,160 C360,178 560,178 760,160 960,142 1080,142 1140,160" />
 
-      <div class="subline" id="subline">14 years of color</div>
+          <circle id="penGlow" class="penTip" r="14" cx="120" cy="160" fill="rgba(255,90,150,0.28)"></circle>
+          <circle id="penTip"  class="penTip" r="8"  cx="120" cy="160" fill="#fff"></circle>
+        </svg>
+
+        <div class="subline" id="subline">14 years of color</div>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  const duration = 10000;
-  const overlay = document.getElementById("overlay");
-  const underline = document.getElementById("underlinePath");
-  const pen = document.getElementById("pen");
-  const revealRect = document.getElementById("revealRect");
-  const subline = document.getElementById("subline");
+  <script>
+    // Close behavior (tap OR timeout)
+    const qs = new URLSearchParams(location.search);
+    const duration = Math.max(2000, Math.min(20000, Number(qs.get("duration")) || 10000));
+    const overlay = document.getElementById("overlay");
+    let doneOnce = false;
 
-  const len = underline.getTotalLength();
-  underline.style.strokeDasharray = len;
-  underline.style.strokeDashoffset = len;
+    function done(){
+      if (doneOnce) return;
+      doneOnce = true;
+      overlay.classList.add("hidden");
+    }
+    window.addEventListener("click", done, {capture:true, once:true});
+    setTimeout(done, duration);
 
-  setTimeout(()=>{
-    const start = performance.now();
-    pen.style.opacity = 1;
+    // Handwriting: underline + text reveal together
+    const WRITE_DELAY = 3200;
+    const WRITE_MS = 1700;
 
-    function anim(t){
-      const p = Math.min(1,(t-start)/1600);
-      const e = 1-Math.pow(1-p,3);
+    const underline = document.getElementById("underlinePath");
+    const penTip = document.getElementById("penTip");
+    const penGlow = document.getElementById("penGlow");
+    const revealRect = document.getElementById("revealRect");
+    const subline = document.getElementById("subline");
 
-      underline.style.strokeDashoffset = len*(1-e);
-      const pt = underline.getPointAtLength(len*e);
-      pen.setAttribute("cx",pt.x);
-      pen.setAttribute("cy",pt.y);
-      revealRect.setAttribute("width",1200*e);
+    const len = underline.getTotalLength();
+    underline.style.strokeDasharray = String(len);
+    underline.style.strokeDashoffset = String(len);
 
-      if(p<1) requestAnimationFrame(anim);
-      else{
-        pen.style.opacity=0;
-        subline.style.opacity=1;
+    function animateWrite(){
+      const start = performance.now();
+      penTip.style.opacity = "1";
+      penGlow.style.opacity = "1";
+
+      function frame(now){
+        const t = Math.min(1, (now - start) / WRITE_MS);
+        const eased = 1 - Math.pow(1 - t, 3);
+
+        underline.style.strokeDashoffset = String(len * (1 - eased));
+
+        const p = underline.getPointAtLength(len * eased);
+        penTip.setAttribute("cx", p.x);
+        penTip.setAttribute("cy", p.y);
+        penGlow.setAttribute("cx", p.x);
+        penGlow.setAttribute("cy", p.y);
+
+        revealRect.setAttribute("width", String(1200 * eased));
+
+        if (t < 1) requestAnimationFrame(frame);
+        else {
+          penTip.style.opacity = "0";
+          penGlow.style.opacity = "0";
+          subline.style.opacity = "1";
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    setTimeout(animateWrite, WRITE_DELAY);
+
+    // Fireworks particles (canvas)
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+
+    function resize(){
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const particles = [];
+    const startFx = performance.now();
+
+    function burst(x,y,power){
+      const count = Math.floor(46 + power * 40);
+      for(let i=0;i<count;i++){
+        const a = Math.random()*Math.PI*2;
+        const sp = (1.0 + Math.random()*3.2) * power;
+        particles.push({
+          x,y,
+          vx: Math.cos(a)*sp*120,
+          vy: Math.sin(a)*sp*120 - (80*power),
+          life: 900 + Math.random()*950,
+          born: performance.now(),
+          size: 1 + Math.random()*2.4,
+          hue: 338 + Math.random()*28,
+          sat: 88 + Math.random()*8,
+          lum: 60 + Math.random()*16
+        });
       }
     }
-    requestAnimationFrame(anim);
-  },3200);
 
-  overlay.addEventListener("click",()=>overlay.style.opacity=0,{once:true});
-  setTimeout(()=>overlay.style.opacity=0,duration);
-</script>
+    const schedule = [
+      { t: 2100, n: 1, p: 1.05 },
+      { t: 3000, n: 2, p: 1.00 },
+      { t: 5200, n: 2, p: 1.05 },
+      { t: 7400, n: 2, p: 0.95 },
+      { t: 9000, n: 1, p: 0.90 },
+    ];
+    let schIdx = 0;
+
+    function tick(){
+      const t = performance.now() - startFx;
+
+      while (schIdx < schedule.length && t >= schedule[schIdx].t){
+        for(let i=0;i<schedule[schIdx].n;i++){
+          const x = window.innerWidth*(0.22 + Math.random()*0.56);
+          const y = window.innerHeight*(0.14 + Math.random()*0.26);
+          burst(x,y,schedule[schIdx].p);
+        }
+        schIdx++;
+      }
+
+      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+      for(let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        const age = performance.now()-p.born;
+        const k = age/p.life;
+        if(k>=1){ particles.splice(i,1); continue; }
+
+        const dt = 16/1000;
+        p.vy += 520*dt;
+        p.x += p.vx*dt;
+        p.y += p.vy*dt;
+
+        const alpha = (1-k)*0.9;
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue},${p.sat}%,${p.lum}%,${alpha})`;
+        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fill();
+      }
+
+      if (t < duration + 1200) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  </script>
 </body>
 </html>
