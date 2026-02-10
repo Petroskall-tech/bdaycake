@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Birthday Loader</title>
+  <style>
+    :root{
+      --bg: rgba(255,255,255,0.92);
+      --red1:#c4142d;
+      --red2:#b11226;
+      --shadow: rgba(0,0,0,0.18);
+      --glow: rgba(255, 165, 180, 0.45);
+      --text:#111;
+    }
+
+    html,body{height:100%; margin:0;}
+    body{
+      overflow:hidden;
+      background: transparent;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    /* Full overlay inside the iframe */
+    .overlay{
+      position:fixed; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(1200px 600px at 50% 45%, rgba(255,210,220,0.25), transparent 55%),
+                  var(--bg);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 999999;
+      animation: overlayIn 280ms ease-out both;
+    }
+
+    .stage{
+      position:relative;
+      width:min(520px, 92vw);
+      height:min(420px, 72vh);
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* Subtle floor shadow */
+    .floor{
+      position:absolute;
+      width:min(360px, 70vw);
+      height:28px;
+      bottom:80px;
+      background: radial-gradient(closest-side, rgba(0,0,0,0.22), transparent 70%);
+      filter: blur(2px);
+      opacity:0;
+      transform: translateY(8px);
+      animation: floorIn 450ms ease-out 220ms forwards;
+    }
+
+    /* Box container */
+    .boxWrap{
+      position:relative;
+      width: 200px;
+      height: 200px;
+      transform: translateY(18px) scale(0.92);
+      opacity:0;
+      animation: boxIntro 520ms cubic-bezier(.2,.9,.25,1.2) 120ms forwards,
+                 boxShake 1200ms ease-in-out 720ms forwards;
+    }
+
+    .boxBody{
+      position:absolute;
+      left:50%; bottom:0;
+      width:200px; height:140px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, var(--red1), var(--red2));
+      border-radius: 16px;
+      box-shadow: 0 18px 44px var(--shadow);
+      overflow:hidden;
+    }
+
+    .boxBody::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent 28%, rgba(255,255,255,0.06));
+      transform: translateX(-25%);
+      opacity:0.7;
+    }
+
+    .ribbon{
+      position:absolute;
+      left:50%; top:0;
+      width:22px; height:100%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.25);
+      mix-blend-mode: screen;
+      opacity:0.7;
+    }
+
+    .boxLid{
+      position:absolute;
+      left:50%; top:20px;
+      width:220px; height:56px;
+      transform: translateX(-50%) translateY(0) rotate(0deg);
+      transform-origin: 50% 90%;
+      background: linear-gradient(180deg, #d92b45, var(--red1));
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+      opacity:1;
+      animation: lidPop 920ms cubic-bezier(.2,.9,.25,1.15) 780ms forwards;
+    }
+
+    .spark{
+      position:absolute;
+      left:50%; top:55px;
+      width:10px; height:10px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,0.0));
+      opacity:0;
+      filter: drop-shadow(0 0 22px var(--glow)) drop-shadow(0 0 38px var(--glow));
+      animation: sparkBurst 520ms ease-out 980ms forwards;
+    }
+
+    /* Burst items */
+    .item{
+      position:absolute;
+      left:50%; top:85px;
+      transform: translateX(-50%) translateY(40px) scale(0.6) rotate(0deg);
+      opacity:0;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 14px 26px rgba(0,0,0,0.16));
+    }
+
+    .bottle{
+      width: 90px;
+      animation: bottleLaunch 1200ms cubic-bezier(.12,.95,.2,1.05) 980ms forwards;
+    }
+
+    .heart{
+      width: 56px;
+      filter: drop-shadow(0 12px 22px rgba(0,0,0,0.12));
+    }
+    .petal{
+      width: 64px;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.10));
+      opacity:0.95;
+    }
+
+    /* Individual trajectories */
+    .h1{ animation: floatBurst1 1400ms cubic-bezier(.12,.95,.2,1.05) 1020ms forwards; }
+    .h2{ animation: floatBurst2 1500ms cubic-bezier(.12,.95,.2,1.05) 1030ms forwards; }
+    .h3{ animation: floatBurst3 1550ms cubic-bezier(.12,.95,.2,1.05) 1040ms forwards; }
+
+    .p1{ animation: petalBurst1 1600ms cubic-bezier(.12,.95,.2,1.05) 1000ms forwards; }
+    .p2{ animation: petalBurst2 1700ms cubic-bezier(.12,.95,.2,1.05) 1010ms forwards; }
+    .p3{ animation: petalBurst3 1750ms cubic-bezier(.12,.95,.2,1.05) 1020ms forwards; }
+
+    /* Text */
+    .title{
+      position:absolute;
+      left:50%;
+      bottom: 34px;
+      transform: translateX(-50%) translateY(10px);
+      text-align:center;
+      font-weight: 800;
+      letter-spacing: 4px;
+      font-size: clamp(18px, 3.5vw, 34px);
+      color: #111;
+      opacity:0;
+      text-transform: uppercase;
+      filter: drop-shadow(0 10px 26px rgba(0,0,0,0.10));
+      animation: titleIn 650ms ease-out 1400ms forwards,
+                 titlePulse 1200ms ease-in-out 2100ms infinite;
+    }
+
+    .subtitle{
+      position:absolute;
+      left:50%;
+      bottom: 10px;
+      transform: translateX(-50%) translateY(10px);
+      font-weight: 600;
+      opacity:0;
+      font-size: clamp(12px, 2.2vw, 16px);
+      color: rgba(17,17,17,0.72);
+      animation: subtitleIn 650ms ease-out 1550ms forwards;
+    }
+
+    /* Exit */
+    .overlay.exit{
+      animation: overlayOut 520ms ease-in forwards;
+    }
+
+    /* ---- Keyframes ---- */
+    @keyframes overlayIn { from{opacity:0} to{opacity:1} }
+    @keyframes overlayOut { to{opacity:0; visibility:hidden} }
+
+    @keyframes floorIn { to{opacity:1; transform: translateY(0)} }
+
+    @keyframes boxIntro {
+      from { opacity:0; transform: translateY(28px) scale(0.85); }
+      to   { opacity:1; transform: translateY(18px) scale(1); }
+    }
+
+    @keyframes boxShake {
+      0%   { transform: translateY(18px) rotate(0deg); }
+      10%  { transform: translateY(18px) rotate(-2deg); }
+      20%  { transform: translateY(18px) rotate(2deg); }
+      30%  { transform: translateY(18px) rotate(-2.2deg); }
+      40%  { transform: translateY(18px) rotate(2.2deg); }
+      55%  { transform: translateY(18px) rotate(-1deg); }
+      70%  { transform: translateY(18px) rotate(1deg); }
+      100% { transform: translateY(18px) rotate(0deg); }
+    }
+
+    @keyframes lidPop {
+      0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
+      35%  { transform: translateX(-50%) translateY(-18px) rotate(-8deg); }
+      70%  { transform: translateX(-50%) translateY(-48px) rotate(-22deg); }
+      100% { transform: translateX(-50%) translateY(-58px) rotate(-28deg); opacity:1;}
+    }
+
+    @keyframes sparkBurst{
+      0% { opacity:0; transform: translateX(-50%) scale(0.6); }
+      40%{ opacity:1; transform: translateX(-50%) scale(3.2); }
+      100%{ opacity:0; transform: translateX(-50%) scale(5.4); }
+    }
+
+    @keyframes bottleLaunch{
+      0% { opacity:0; transform: translateX(-50%) translateY(55px) scale(0.65) rotate(0deg); }
+      18%{ opacity:1; transform: translateX(-50%) translateY(5px) scale(0.95) rotate(-6deg); }
+      55%{ opacity:1; transform: translateX(-50%) translateY(-150px) scale(1.05) rotate(6deg); }
+      100%{ opacity:1; transform: translateX(-50%) translateY(-190px) scale(1.0) rotate(0deg); }
+    }
+
+    @keyframes floatBurst1{
+      0% { opacity:0; transform: translateX(-50%) translate(-10px, 60px) scale(.55) rotate(0deg); }
+      15%{ opacity:1; transform: translateX(-50%) translate(-120px, -10px) scale(.95) rotate(-18deg); }
+      60%{ opacity:1; transform: translateX(-50%) translate(-170px, -150px) scale(1.05) rotate(-32deg); }
+      100%{ opacity:0; transform: translateX(-50%) translate(-190px, -220px) scale(1.08) rotate(-46deg); }
+    }
+    @keyframes floatBurst2{
+      0% { opacity:0; transform: translateX(-50%) translate(10px, 60px) scale(.55) rotate(0deg); }
+      15%{ opacity:1; transform: translateX(-50%) translate(120px, -5px) scale(.95) rotate(14deg); }
+      60%{ opacity:1; transform: translateX(-50%) translate(170px, -145px) scale(1.06) rotate(26deg); }
+      100%{ opacity:0; transform: translateX(-50%) translate(195px, -225px) scale(1.1) rotate(38deg); }
+    }
+    @keyframes floatBurst3{
+      0% { opacity:0; transform: translateX(-50%) translate(0px, 60px) scale(.55) rotate(0deg); }
+      20%{ opacity:1; transform: translateX(-50%) translate(0px, -25px) scale(.95) rotate(8deg); }
+      65%{ opacity:1; transform: translateX(-50%) translate(0px, -170px) scale(1.08) rotate(16deg); }
+      100%{ opacity:0; transform: translateX(-50%) translate(0px, -245px) scale(1.12) rotate(22deg); }
+    }
+
+    @keyframes petalBurst1{
+      0% { opacity:0; transform: translateX(-50%) translate(-10px, 70px) scale(.55) rotate(0deg); }
+      20%{ opacity:1; transform: translateX(-50%) translate(-150px, 10px) scale(.95) rotate(-90deg); }
+      70%{ opacity:1; transform: translateX(-50%) translate(-200px, -120px) scale(1.05) rotate(-160deg); }
+      100%{ opacity:0; transform: translateX(-50%) translate(-230px, -200px) scale(1.1) rotate(-220deg); }
+    }
+    @keyframes petalBurst2{
+      0% { opacity:0; transform: translateX(-50%) translate(10px, 70px) scale(.55) rotate(0deg); }
+      20%{ opacity:1; transform: translateX(-50%) translate(150px, 10px) scale(.95) rotate(90deg); }
+      70%{ opacity:1; transform: translateX(-50%) translate(205px, -115px) scale(1.05) rotate(160deg); }
+      100%{ opacity:0; transform: translateX(-50%) translate(235px, -205px) scale(1.1) rotate(220deg); }
+    }
+    @keyframes petalBurst3{
+      0% { opacity:0; transform: translateX(-50%) translate(0px, 70px) scale(.55) rotate(0deg); }
+      25%{ opacity:1; transform: translateX(-50%) translate(0px, 5px) scale(.95) rotate(140deg); }
+      75%{ opacity:1; transform: translateX(-50%) translate(0px, -120px) scale(1.08) rotate(240deg); }
+      100%{ opacity:0; transform: translateX(-50%) translate(0px, -210px) scale(1.12) rotate(320deg); }
+    }
+
+    @keyframes titleIn{
+      to { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes subtitleIn{
+      to { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes titlePulse{
+      0%,100% { filter: drop-shadow(0 10px 26px rgba(0,0,0,0.10)); transform: translateX(-50%) scale(1); }
+      50% { filter: drop-shadow(0 12px 34px rgba(255,165,180,0.35)); transform: translateX(-50%) scale(1.03); }
+    }
+
+    /* Mobile: keep it clean */
+    @media (max-width: 480px){
+      .bottle{ width: 78px; }
+      .heart{ width: 46px; }
+      .petal{ width: 54px; }
+      .boxWrap{ width:180px; height:180px; }
+      .boxBody{ width:180px; }
+      .boxLid{ width:200px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay" class="overlay" role="presentation">
+    <div class="stage">
+      <div class="floor"></div>
+
+      <div class="boxWrap">
+        <div class="boxLid"></div>
+
+        <div class="boxBody">
+          <div class="ribbon"></div>
+        </div>
+
+        <div class="spark"></div>
+
+        <!-- Assets -->
+        <img class="item bottle"
+             src="https://assets.laloo.gr/img/cms/bottle.png"
+             alt="Laloo Product" />
+
+        <img class="item heart h1"
+             src="https://assets.laloo.gr/img/cms/heart_1.png"
+             alt="" aria-hidden="true" />
+        <img class="item heart h2"
+             src="https://assets.laloo.gr/img/cms/heart_1.png"
+             alt="" aria-hidden="true" />
+        <img class="item heart h3"
+             src="https://assets.laloo.gr/img/cms/heart_1.png"
+             alt="" aria-hidden="true" />
+
+        <img class="item petal p1"
+             src="https://assets.laloo.gr/img/cms/rose%20petal_1.png"
+             alt="" aria-hidden="true" />
+        <img class="item petal p2"
+             src="https://assets.laloo.gr/img/cms/rose%20petal_1.png"
+             alt="" aria-hidden="true" />
+        <img class="item petal p3"
+             src="https://assets.laloo.gr/img/cms/rose%20petal_1.png"
+             alt="" aria-hidden="true" />
+
+      </div>
+
+      <div class="title">BIRTHDAY SALES</div>
+      <div class="subtitle">Loading…</div>
+    </div>
+  </div>
+
+  <script>
+    // Settings
+    const DURATION_MS = 2800;   // πόσο μένει πριν το fade-out
+    const EXIT_MS = 520;        // match CSS overlayOut
+    const overlay = document.getElementById("overlay");
+
+    // If you want to control via query string: ?duration=3000
+    const qs = new URLSearchParams(location.search);
+    const dur = Number(qs.get("duration"));
+    const duration = Number.isFinite(dur) && dur >= 1200 && dur <= 8000 ? dur : DURATION_MS;
+
+    // Exit sequence
+    setTimeout(() => {
+      overlay.classList.add("exit");
+
+      // notify parent (optional)
+      try {
+        window.parent.postMessage({ type: "BIRTHDAY_LOADER_DONE" }, "*");
+      } catch (e) {}
+
+      // remove from DOM
+      setTimeout(() => {
+        overlay.remove();
+      }, EXIT_MS + 30);
+
+    }, duration);
+  </script>
+</body>
+</html>
